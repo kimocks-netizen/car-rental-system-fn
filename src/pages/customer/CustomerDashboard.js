@@ -2,35 +2,35 @@ import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import DashboardCard from '../../components/DashboardCard';
 
-const StaffDashboard = () => {
-  const { user } = useAuth();
+const CustomerDashboard = () => {
+  const { user, logout } = useAuth();
 
   const dashboardItems = [
     {
-      imageSrc: '/photos/car1.jpg',
-      alt: 'Manage Bookings',
-      title: 'Manage Bookings',
-      description: 'Process customer bookings',
-      link: '/staff/bookings',
-      linkText: 'View Bookings',
+      imageSrc: '/photos/car6.jpg',
+      alt: 'Browse Cars',
+      title: 'Browse Cars',
+      description: 'Find the perfect car for your trip',
+      link: '/cars',
+      linkText: 'View Cars',
       delay: '.2s'
     },
     {
-      imageSrc: '/photos/car6.jpg',
-      alt: 'Car Management',
-      title: 'Car Management',
-      description: 'Update car status and details',
-      link: '/staff/cars',
-      linkText: 'Manage Cars',
+      imageSrc: '/photos/car1.jpg',
+      alt: 'My Bookings',
+      title: 'My Bookings',
+      description: 'View and manage your reservations',
+      link: '/bookings',
+      linkText: 'View Bookings',
       delay: '.4s'
     },
     {
-      imageSrc: '/photos/inspections.jpg',
-      alt: 'Return Inspection',
-      title: 'Return Inspection',
-      description: 'Process car returns',
-      link: '/staff/inspections',
-      linkText: 'Inspections',
+      imageSrc: '/photos/avatar.png',
+      alt: 'Profile',
+      title: 'Profile',
+      description: 'Update your personal information',
+      link: '/profile',
+      linkText: 'Edit Profile',
       delay: '.6s'
     }
   ];
@@ -56,8 +56,8 @@ const StaffDashboard = () => {
             </div>
             
             <div className="alert alert-info">
-              <h5>Staff Features Coming Soon!</h5>
-              <p className="mb-0">Full staff functionality will be available in upcoming modules.</p>
+              <h5>Coming Soon!</h5>
+              <p className="mb-0">Full dashboard functionality will be available in upcoming modules.</p>
             </div>
           </div>
         </div>
@@ -66,4 +66,4 @@ const StaffDashboard = () => {
   );
 };
 
-export default StaffDashboard;
+export default CustomerDashboard;

@@ -16,6 +16,15 @@ import Register from './pages/public/Register';
 import Footer from './components/common/Footer';
 import ScrollToTopButton from './reference/ScrollToTopButton';
 
+// Import auth context and protected routes
+import { AuthProvider, useAuth } from './context/AuthContext';
+import ProtectedRoute, { AdminRoute, StaffRoute, CustomerRoute } from './components/common/ProtectedRoute';
+
+// Import dashboard pages
+import CustomerDashboard from './pages/customer/CustomerDashboard';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import StaffDashboard from './pages/staff/StaffDashboard';
+
 import { WOW } from 'wowjs';
 
 //import './styles/style.scss';
@@ -34,19 +43,7 @@ function ScrollToTop() {
 }
 
 const App = ({showContactUs=true}) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  useEffect(() => {
-
-    const authStatus = localStorage.getItem("isAuthenticated");
-    if (authStatus === "true") {
-      setIsAuthenticated(true);
-    }
-  }, []);
-  const handleLogout = () => {
-    // Clear authentication state
-    localStorage.removeItem("isAuthenticated");
-    setIsAuthenticated(false);
-  };
+  const { user, logout, isAuthenticated } = useAuth();
   // State for toggling mobile menu
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -157,30 +154,42 @@ const App = ({showContactUs=true}) => {
               <div className="menu-wrapper d-flex align-items-center justify-content-between">
                 {/* Logo */}
                 <div className="logo">
-                  <Link to="/home">
+                  <Link to={isAuthenticated ? `/${user?.role}/dashboard` : "/home"}>
                     <img src="/car-logo.png" alt="Logo" width="80" height="40" />
                   </Link>
                 </div>
 
                 {/* Main-menu for large screens */}
-                <div className={`main-menu f-right d-none d-lg-block ${menuOpen ? 'open' : ''}`}>
+                <div className={`main-menu ${isAuthenticated ? 'text-center' : 'f-right'} d-none d-lg-block ${menuOpen ? 'open' : ''}`}>
                   <nav>
                     <ul id="navigation">
-                      <li><Link to="/home">Home</Link></li>
-                      <li><Link to="/contact-us">Contact Us</Link></li>
-                      {!isAuthenticated &&  <li><Link to="/login">Login</Link></li>}
-                      {!isAuthenticated &&  <li><Link to="/register">Register</Link></li>}
-                      {isAuthenticated && <li><Link to="/" onClick={handleLogout}>Logout</Link></li>}
+                      {!isAuthenticated && <li><Link to="/home">Home</Link></li>}
+                      {!isAuthenticated && <li><Link to="/contact-us">Contact Us</Link></li>}
+                      {!isAuthenticated && <li><Link to="/login">Login</Link></li>}
+                      {!isAuthenticated && <li><Link to="/register">Register</Link></li>}
+                      {isAuthenticated && (
+                        <li><Link to={`/${user?.role}/dashboard`}>Dashboard</Link></li>
+                      )}
                     </ul>
                   </nav>
                 </div>
 
+                {/* Welcome message for authenticated users */}
+                {isAuthenticated && (
+                  <div className="d-flex align-items-center d-none d-lg-block" style={{textAlign: 'right'}}>
+                    <span style={{color: 'white', fontSize: '16px !important', fontWeight: 'normal !important', marginRight: '20px'}}>Welcome, {user?.full_name}</span>
+                    <button onClick={logout} className="btn btn-danger" style={{fontSize: '14px', padding: '12px 20px', height: '40px'}}>Logout</button>
+                  </div>
+                )}
+
                 {/* Header-btn */}
-                <div className="header-btns d-none d-lg-block f-right">
-                  <a href="whatsapp://send?phone=+27671473686&text=Hello, Stream Line TV I would like to try your TV for free." className="btn">
-                    BOOK NOW
-                  </a>
-                </div>
+                {!isAuthenticated && (
+                  <div className="header-btns d-none d-lg-block f-right">
+                    <a href="whatsapp://send?phone=+27671473686&text=Hello, Stream Line TV I would like to try your TV for free." className="btn">
+                      BOOK NOW
+                    </a>
+                  </div>
+                )}
 
                 {/* Mobile Menu - Hamburger icon */}
                 <div className="mobile-menu-icon d-block d-lg-none" onClick={toggleMenu}>
@@ -194,14 +203,21 @@ const App = ({showContactUs=true}) => {
                   <div className="mobile-menu d-block d-lg-none">
                     <nav>
                       <ul id="navigation">
-                        <li><Link to="/home" onClick={toggleMenu}>Home</Link></li>
-                        <li><Link to="/contact-us" onClick={toggleMenu}>Contact Us</Link></li>
+                        {!isAuthenticated && <li><Link to="/home" onClick={toggleMenu}>Home</Link></li>}
+                        {!isAuthenticated && <li><Link to="/contact-us" onClick={toggleMenu}>Contact Us</Link></li>}
                         {!isAuthenticated && <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>}
                         {!isAuthenticated && <li><Link to="/register" onClick={toggleMenu}>Register</Link></li>}
-                        {isAuthenticated && <li><Link to="/" onClick={handleLogout}>Logout</Link></li>}  
-                        <li><a href="whatsapp://send?phone=+27671473686&text=Hello, Stream Line TV I would like to try your TV for free." className=" btn">
-                          BOOK
-                        </a></li>
+                        {isAuthenticated && (
+                          <>
+                            <li><Link to={`/${user?.role}/dashboard`} onClick={toggleMenu}>Dashboard</Link></li>
+                            <li><Link to="/" onClick={() => { logout(); toggleMenu(); }}>Logout</Link></li>
+                          </>
+                        )}  
+                        {!isAuthenticated && (
+                          <li><a href="whatsapp://send?phone=+27671473686&text=Hello, Stream Line TV I would like to try your TV for free." className=" btn">
+                            BOOK
+                          </a></li>
+                        )}
                       </ul>
                     </nav>                   
                   </div>
@@ -218,23 +234,51 @@ const App = ({showContactUs=true}) => {
           <Route path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
           <Route path="/contact-us" element={<Contact />} />
-          <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          
+          {/* Protected Dashboard Routes */}
+          <Route path="/customer/dashboard" element={
+            <CustomerRoute>
+              <CustomerDashboard />
+            </CustomerRoute>
+          } />
+          <Route path="/staff/dashboard" element={
+            <StaffRoute>
+              <StaffDashboard />
+            </StaffRoute>
+          } />
+          <Route path="/admin/dashboard" element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          } />
+          
+          {/* Unauthorized page */}
+          <Route path="/unauthorized" element={
+            <div className="container py-5 text-center">
+              <h2>Access Denied</h2>
+              <p>You don't have permission to access this page.</p>
+              <Link to="/" className="btn btn-primary">Go Home</Link>
+            </div>
+          } />
         </Routes>
-        {showContactUs && <ContactUs/>}
+        {showContactUs && !isAuthenticated && <ContactUs/>}
       </main>
 
-      <Footer />
+      {!isAuthenticated && <Footer />}
       <ScrollToTopButton />
     </div>
   );
 };
 
-// Wrap the App in the Router for routing
+// Wrap the App in the Router and AuthProvider
 export default function RouterApp() {
   return (
     <Router>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </Router>
   );
 }

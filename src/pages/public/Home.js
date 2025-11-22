@@ -67,7 +67,7 @@ const Home = () => {
             data-wow-delay=".3s"
           >
             <div className="front-text">
-              <h2>Why Choose Us</h2>
+              <h2>Why  Us</h2>
               <p>
                 We provide premium car rental services with the latest vehicle models:
                 Sedans, SUVs, Luxury Cars, Hatchbacks, and Commercial Vehicles. Get 

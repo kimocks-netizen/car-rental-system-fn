@@ -1,102 +1,81 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { useAuth } from '../../context/AuthContext';
+import React , { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { WOW } from 'wowjs';
+import { useEffect } from 'react';
 
 const LoginForm = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm();
-  const { login } = useAuth();
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
+    const { login } = useAuth();
+  
+    const handleLogin = async (e) => {
+      e.preventDefault();
+      setIsLoading(true);
+      setErrorMessage('');
+      
+      try {
+        const result = await login(email, password);
+        
+        if (result.success) {
+          const userRole = result.user.role;
+          if (userRole === 'admin') {
+            navigate('/admin/dashboard');
+          } else if (userRole === 'staff') {
+            navigate('/staff/dashboard');
+          } else {
+            navigate('/customer/dashboard');
+          }
+        }
+      } catch (error) {
+        setErrorMessage(error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const onSubmit = async (data) => {
-    setLoading(true);
-    setError('');
-    
-    try {
-      // API call will be implemented in Module 9
-      console.log('Login data:', data);
-      
-      // Mock login for now
-      const mockUser = {
-        id: '1',
-        full_name: 'John Doe',
-        email: data.email,
-        user_role: 'customer'
-      };
-      
-      login(mockUser, 'mock-token');
-      navigate('/dashboard');
-    } catch (err) {
-      setError('Login failed. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+    useEffect(() => {
+        const wow = new WOW({ live: false });
+        wow.init();
+    }, []);
 
   return (
-    <div className="card">
-      <div className="card-body">
-        <h3 className="card-title text-center mb-4">Login</h3>
-        
-        {error && (
-          <div className="alert alert-danger" role="alert">
-            {error}
+    <section className="pricing-area section-padding30 fix">
+      <div className="container">
+        <div className="properties__card wow fadeInUp" data-wow-duration="2s" data-wow-delay=".4s">
+          <div className="features-caption tnc-txt-color">
+            <h2 className="login-page-title">Car Rental Login:</h2>
+            {errorMessage && <p className="error-message">{errorMessage}</p>}
+            <form onSubmit={handleLogin} className="login-form">
+                <div className="login-input">
+                <label>Email:</label>
+                <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                />
+                </div >
+                <div className="login-input">
+                <label>Password:</label>
+                <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                />
+                </div>
+                <button type="submit" className="login-button" disabled={isLoading}>
+                  {isLoading ? 'Logging in...' : 'Login'}
+                </button>
+            </form>
           </div>
-        )}
-        
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="mb-3">
-            <label className="form-label">Email</label>
-            <input
-              type="email"
-              className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-              {...register('email', { 
-                required: 'Email is required',
-                pattern: {
-                  value: /^\S+@\S+$/i,
-                  message: 'Invalid email address'
-                }
-              })}
-            />
-            {errors.email && (
-              <div className="invalid-feedback">{errors.email.message}</div>
-            )}
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">Password</label>
-            <input
-              type="password"
-              className={`form-control ${errors.password ? 'is-invalid' : ''}`}
-              {...register('password', { 
-                required: 'Password is required',
-                minLength: {
-                  value: 6,
-                  message: 'Password must be at least 6 characters'
-                }
-              })}
-            />
-            {errors.password && (
-              <div className="invalid-feedback">{errors.password.message}</div>
-            )}
-          </div>
-
-          <button 
-            type="submit" 
-            className="btn btn-primary w-100"
-            disabled={loading}
-          >
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
-        
-        <div className="text-center mt-3">
-          <button type="button" className="btn btn-link text-decoration-none p-0">Forgot Password?</button>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

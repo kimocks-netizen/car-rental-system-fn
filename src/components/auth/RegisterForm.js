@@ -1,147 +1,215 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const RegisterForm = () => {
-  const { register, handleSubmit, watch, formState: { errors } } = useForm();
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    full_name: '',
+    phone: ''
+  });
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const { register } = useAuth();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
-  const password = watch('password');
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
 
-  const onSubmit = async (data) => {
-    setLoading(true);
-    setError('');
+  const validateForm = () => {
+    const newErrors = {};
     
+    if (!formData.full_name.trim()) {
+      newErrors.full_name = 'Full name is required';
+    } else if (formData.full_name.trim().length < 2) {
+      newErrors.full_name = 'Full name must be at least 2 characters';
+    }
+    
+    if (!formData.email) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email is invalid';
+    }
+    
+    if (!formData.phone) {
+      newErrors.phone = 'Phone number is required';
+    } else if (!/^\+?[1-9]\d{1,14}$/.test(formData.phone.replace(/\s/g, ''))) {
+      newErrors.phone = 'Invalid phone number format';
+    }
+    
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+    
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = 'Please confirm your password';
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+    
+    return newErrors;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    const formErrors = validateForm();
+    if (Object.keys(formErrors).length > 0) {
+      setErrors(formErrors);
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrors({});
+
     try {
-      console.log('Register data:', data);
-      // API call will be implemented in Module 9
-      navigate('/login');
-    } catch (err) {
-      setError('Registration failed. Please try again.');
+      const { confirmPassword, ...registrationData } = formData;
+      const result = await register(registrationData);
+      
+      if (result.success) {
+        navigate('/customer/dashboard');
+      }
+    } catch (error) {
+      setErrors({ general: error.message });
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
   return (
     <div className="card">
+      <div className="card-header">
+        <h3 className="text-center">Create Your Account</h3>
+      </div>
       <div className="card-body">
-        <h3 className="card-title text-center mb-4">Register</h3>
-        
-        {error && (
+        {errors.general && (
           <div className="alert alert-danger" role="alert">
-            {error}
+            {errors.general}
           </div>
         )}
         
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="form-label">Full Name</label>
-            <input
-              type="text"
+            <label htmlFor="full_name" className="form-label">Full Name</label>
+            <input 
+              type="text" 
               className={`form-control ${errors.full_name ? 'is-invalid' : ''}`}
-              {...register('full_name', { required: 'Full name is required' })}
+              id="full_name"
+              name="full_name"
+              value={formData.full_name}
+              onChange={handleChange}
+              required 
             />
             {errors.full_name && (
-              <div className="invalid-feedback">{errors.full_name.message}</div>
+              <div className="invalid-feedback">
+                {errors.full_name}
+              </div>
             )}
           </div>
 
           <div className="mb-3">
-            <label className="form-label">Email</label>
-            <input
-              type="email"
+            <label htmlFor="email" className="form-label">Email Address</label>
+            <input 
+              type="email" 
               className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-              {...register('email', { 
-                required: 'Email is required',
-                pattern: {
-                  value: /^\S+@\S+$/i,
-                  message: 'Invalid email address'
-                }
-              })}
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required 
             />
             {errors.email && (
-              <div className="invalid-feedback">{errors.email.message}</div>
+              <div className="invalid-feedback">
+                {errors.email}
+              </div>
             )}
           </div>
 
           <div className="mb-3">
-            <label className="form-label">Phone</label>
-            <input
-              type="tel"
+            <label htmlFor="phone" className="form-label">Phone Number</label>
+            <input 
+              type="tel" 
               className={`form-control ${errors.phone ? 'is-invalid' : ''}`}
-              {...register('phone', { required: 'Phone is required' })}
+              id="phone"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="+1234567890"
+              required 
             />
             {errors.phone && (
-              <div className="invalid-feedback">{errors.phone.message}</div>
+              <div className="invalid-feedback">
+                {errors.phone}
+              </div>
             )}
           </div>
-
+          
           <div className="mb-3">
-            <label className="form-label">Address</label>
-            <textarea
-              className={`form-control ${errors.cust_address ? 'is-invalid' : ''}`}
-              rows="3"
-              {...register('cust_address', { required: 'Address is required' })}
-            />
-            {errors.cust_address && (
-              <div className="invalid-feedback">{errors.cust_address.message}</div>
-            )}
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">License Number</label>
-            <input
-              type="text"
-              className={`form-control ${errors.license_number ? 'is-invalid' : ''}`}
-              {...register('license_number', { required: 'License number is required' })}
-            />
-            {errors.license_number && (
-              <div className="invalid-feedback">{errors.license_number.message}</div>
-            )}
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">Password</label>
-            <input
-              type="password"
+            <label htmlFor="password" className="form-label">Password</label>
+            <input 
+              type="password" 
               className={`form-control ${errors.password ? 'is-invalid' : ''}`}
-              {...register('password', { 
-                required: 'Password is required',
-                minLength: {
-                  value: 6,
-                  message: 'Password must be at least 6 characters'
-                }
-              })}
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required 
             />
             {errors.password && (
-              <div className="invalid-feedback">{errors.password.message}</div>
+              <div className="invalid-feedback">
+                {errors.password}
+              </div>
             )}
           </div>
 
           <div className="mb-3">
-            <label className="form-label">Confirm Password</label>
-            <input
-              type="password"
+            <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
+            <input 
+              type="password" 
               className={`form-control ${errors.confirmPassword ? 'is-invalid' : ''}`}
-              {...register('confirmPassword', { 
-                required: 'Please confirm your password',
-                validate: value => value === password || 'Passwords do not match'
-              })}
+              id="confirmPassword"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              required 
             />
             {errors.confirmPassword && (
-              <div className="invalid-feedback">{errors.confirmPassword.message}</div>
+              <div className="invalid-feedback">
+                {errors.confirmPassword}
+              </div>
             )}
           </div>
-
+          
           <button 
             type="submit" 
             className="btn btn-primary w-100"
-            disabled={loading}
+            disabled={isSubmitting}
           >
-            {loading ? 'Registering...' : 'Register'}
+            {isSubmitting ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Creating Account...
+              </>
+            ) : (
+              'Create Account'
+            )}
           </button>
         </form>
       </div>
