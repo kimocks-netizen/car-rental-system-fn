@@ -36,7 +36,7 @@ const DataTable = ({ title, data, columns, actions }) => {
         borderBottom: '1px solid rgba(255, 0, 0, 0.3)'
       }}>
         <h5 style={{ color: 'white', margin: 0, fontSize: '1.25rem', fontWeight: '600' }}>{title}</h5>
-        <span style={{ color: '#ccc', fontSize: '0.9rem' }}>{data.length} records</span>
+        <span style={{ color: '#ccc', fontSize: '0.9rem' }}>{Array.isArray(data) ? data.length : 0} records</span>
       </div>
       
       <div style={{ 
@@ -79,7 +79,7 @@ const DataTable = ({ title, data, columns, actions }) => {
             </tr>
           </thead>
           <tbody>
-            {data.map((row, rowIndex) => (
+            {Array.isArray(data) && data.map((row, rowIndex) => (
               <tr key={rowIndex} style={{
                 borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
                 transition: 'all 0.2s ease',

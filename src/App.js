@@ -25,6 +25,7 @@ import CustomerDashboard from './pages/customer/CustomerDashboard';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminReports from './pages/admin/AdminReports';
+import AdminBookings from './pages/admin/AdminBookings';
 import StaffDashboard from './pages/staff/StaffDashboard';
 import Header from './components/Header';
 
@@ -163,6 +164,11 @@ const App = ({showContactUs=true}) => {
           <Route path="/admin/reports" element={
             <AdminRoute>
               <AdminReports />
+            </AdminRoute>
+          } />
+          <Route path="/admin/bookings" element={
+            <AdminRoute>
+              <AdminBookings />
             </AdminRoute>
           } />
           
