@@ -23,7 +23,10 @@ import ProtectedRoute, { AdminRoute, StaffRoute, CustomerRoute } from './compone
 // Import dashboard pages
 import CustomerDashboard from './pages/customer/CustomerDashboard';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminUsers from './pages/admin/AdminUsers';
+import AdminReports from './pages/admin/AdminReports';
 import StaffDashboard from './pages/staff/StaffDashboard';
+import Header from './components/Header';
 
 import { WOW } from 'wowjs';
 
@@ -43,9 +46,7 @@ function ScrollToTop() {
 }
 
 const App = ({showContactUs=true}) => {
-  const { user, logout, isAuthenticated } = useAuth();
-  // State for toggling mobile menu
-  const [menuOpen, setMenuOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   // Preloader effect
   useEffect(() => {
@@ -55,28 +56,10 @@ const App = ({showContactUs=true}) => {
     }, 1000); // Adjust timing if needed
   }, []);
 
-  // Toggle mobile menu
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
   useEffect(() => {
     const wow = new WOW({ live: false });
     wow.init();
   }, []);
-  // Automatically hide the mobile menu when user scrolls
-  useEffect(() => {
-    const handleScroll = () => {
-      if (menuOpen) {
-        setMenuOpen(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [menuOpen]);
 
   const ContactUs  = () => (
       
@@ -146,88 +129,7 @@ const App = ({showContactUs=true}) => {
       </div>
       {/* Preloader End */}
 
-      <header>
-        {/* Header Start */}
-        <div className="header-area header-transparent">
-          <div className="main-header header-sticky">
-            <div className="container-fluid">
-              <div className="menu-wrapper d-flex align-items-center justify-content-between">
-                {/* Logo */}
-                <div className="logo">
-                  <Link to={isAuthenticated ? `/${user?.role}/dashboard` : "/home"}>
-                    <img src="/car-logo.png" alt="Logo" width="80" height="40" />
-                  </Link>
-                </div>
-
-                {/* Main-menu for large screens */}
-                <div className={`main-menu ${isAuthenticated ? 'text-center' : 'f-right'} d-none d-lg-block ${menuOpen ? 'open' : ''}`}>
-                  <nav>
-                    <ul id="navigation">
-                      {!isAuthenticated && <li><Link to="/home">Home</Link></li>}
-                      {!isAuthenticated && <li><Link to="/contact-us">Contact Us</Link></li>}
-                      {!isAuthenticated && <li><Link to="/login">Login</Link></li>}
-                      {!isAuthenticated && <li><Link to="/register">Register</Link></li>}
-                      {isAuthenticated && (
-                        <li><Link to={`/${user?.role}/dashboard`}>Dashboard</Link></li>
-                      )}
-                    </ul>
-                  </nav>
-                </div>
-
-                {/* Welcome message for authenticated users */}
-                {isAuthenticated && (
-                  <div className="d-flex align-items-center d-none d-lg-block" style={{textAlign: 'right'}}>
-                    <span style={{color: 'white', fontSize: '16px !important', fontWeight: 'normal !important', marginRight: '20px'}}>Welcome, {user?.full_name}</span>
-                    <button onClick={logout} className="btn btn-danger" style={{fontSize: '14px', padding: '12px 20px', height: '40px'}}>Logout</button>
-                  </div>
-                )}
-
-                {/* Header-btn */}
-                {!isAuthenticated && (
-                  <div className="header-btns d-none d-lg-block f-right">
-                    <a href="whatsapp://send?phone=+27671473686&text=Hello, Stream Line TV I would like to try your TV for free." className="btn">
-                      BOOK NOW
-                    </a>
-                  </div>
-                )}
-
-                {/* Mobile Menu - Hamburger icon */}
-                <div className="mobile-menu-icon d-block d-lg-none" onClick={toggleMenu}>
-                  <span className="hamburger-bar"></span>
-                  <span className="hamburger-bar"></span>
-                  <span className="hamburger-bar"></span>
-                </div>
-
-                {/* Mobile Menu - Display when the menu is open */}
-                {menuOpen && (
-                  <div className="mobile-menu d-block d-lg-none">
-                    <nav>
-                      <ul id="navigation">
-                        {!isAuthenticated && <li><Link to="/home" onClick={toggleMenu}>Home</Link></li>}
-                        {!isAuthenticated && <li><Link to="/contact-us" onClick={toggleMenu}>Contact Us</Link></li>}
-                        {!isAuthenticated && <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>}
-                        {!isAuthenticated && <li><Link to="/register" onClick={toggleMenu}>Register</Link></li>}
-                        {isAuthenticated && (
-                          <>
-                            <li><Link to={`/${user?.role}/dashboard`} onClick={toggleMenu}>Dashboard</Link></li>
-                            <li><Link to="/" onClick={() => { logout(); toggleMenu(); }}>Logout</Link></li>
-                          </>
-                        )}  
-                        {!isAuthenticated && (
-                          <li><a href="whatsapp://send?phone=+27671473686&text=Hello, Stream Line TV I would like to try your TV for free." className=" btn">
-                            BOOK
-                          </a></li>
-                        )}
-                      </ul>
-                    </nav>                   
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* Header End */}
-      </header>
+      <Header />
 
       <main>
         <Routes>
@@ -251,6 +153,16 @@ const App = ({showContactUs=true}) => {
           <Route path="/admin/dashboard" element={
             <AdminRoute>
               <AdminDashboard />
+            </AdminRoute>
+          } />
+          <Route path="/admin/users" element={
+            <AdminRoute>
+              <AdminUsers />
+            </AdminRoute>
+          } />
+          <Route path="/admin/reports" element={
+            <AdminRoute>
+              <AdminReports />
             </AdminRoute>
           } />
           
