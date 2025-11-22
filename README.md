@@ -1,70 +1,100 @@
-# Getting Started with Create React App
+# Car Rental System - Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React-based frontend application for the Car Rental System with modern UI and responsive design.
 
-## Available Scripts
+## 🚀 Quick Start
 
-In the project directory, you can run:
+### Prerequisites
+- Node.js (v16 or higher)
+- npm or yarn
 
-### `npm start`
+### Installation
+```bash
+# Install dependencies
+npm install
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+# Start development server
+npm start
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+The application will open at `http://localhost:3000`
 
-### `npm test`
+## 📁 Project Structure
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```
+src/
+├── components/          # Reusable components
+│   ├── common/         # Shared components (Navbar, Footer, etc.)
+│   ├── auth/           # Authentication components
+│   └── booking/        # Booking-related components
+├── pages/              # Page components
+│   ├── public/         # Public pages (Home, Login, Register)
+│   ├── customer/       # Customer dashboard pages
+│   ├── staff/          # Staff management pages
+│   └── admin/          # Admin panel pages
+├── services/           # API service functions
+├── context/            # React context providers
+├── utils/              # Utility functions
+└── assets/             # Static assets (CSS, images, etc.)
+```
 
-### `npm run build`
+## 🔧 Available Scripts
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- `npm start` - Start development server
+- `npm build` - Build for production
+- `npm test` - Run tests
+- `npm eject` - Eject from Create React App
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 🌐 Environment Variables
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Create a `.env` file in the root directory:
 
-### `npm run eject`
+```env
+REACT_APP_API_URL=http://localhost:5000/api
+REACT_APP_SUPABASE_URL=your_supabase_url
+REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 🎨 Features
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- **Responsive Design**: Mobile-first approach with Bootstrap
+- **Role-based Navigation**: Different interfaces for customers, staff, and admin
+- **Modern UI**: Clean and intuitive user interface
+- **Real-time Updates**: Live booking status and notifications
+- **Secure Authentication**: JWT-based authentication system
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 🔗 API Integration
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+The frontend connects to the Car Rental Backend API running on port 5000. Ensure the backend server is running for full functionality.
 
-## Learn More
+## 📱 Pages
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Public Pages
+- **Home**: Hero section with car rental information
+- **Login**: User authentication
+- **Register**: New user registration
+- **Contact**: Contact information and support
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Customer Pages
+- **Dashboard**: User overview and quick actions
+- **Cars**: Browse available vehicles
+- **Bookings**: Manage car reservations
+- **Profile**: Account settings
 
-### Code Splitting
+### Staff/Admin Pages
+- **Management Dashboards**: Booking and car management
+- **Reports**: Analytics and financial reports
+- **User Management**: Admin user controls
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 🛠️ Built With
 
-### Analyzing the Bundle Size
+- **React 18**: Frontend framework
+- **React Router**: Client-side routing
+- **Bootstrap 5**: CSS framework
+- **Axios**: HTTP client
+- **React Hook Form**: Form handling
+- **Supabase**: Backend as a Service
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## 📄 License
 
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This project is part of the Car Rental System.

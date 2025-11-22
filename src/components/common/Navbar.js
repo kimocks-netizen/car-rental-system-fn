@@ -1,0 +1,1 @@
+// Navbar is integrated into App.js - this is a placeholder for future extraction

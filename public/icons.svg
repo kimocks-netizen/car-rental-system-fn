@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="78" height="78" viewBox="0 0 78 78">
+  <defs>
+    <clipPath id="clip-path">
+      <rect width="78" height="78" fill="none"/>
+    </clipPath>
+  </defs>
+  <g id="icon1" clip-path="url(#clip-path)">
+    <g id="icon1-2" data-name="icon1" transform="translate(-393 -6949)">
+      <circle id="Ellipse_8" data-name="Ellipse 8" cx="39" cy="39" r="39" transform="translate(393 6949)" fill="red"/>
+      <image xlink:href="/price.png" x="405" y="6960" height="35px" width="35px"/>
+    </g>
+  </g>
+</svg>

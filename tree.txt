@@ -1,0 +1,89 @@
+frontend/
+├── src/
+│   ├── components/
+│   │   ├── common/
+│   │   │   ├── Navbar.js
+│   │   │   ├── Footer.js
+│   │   │   ├── LoadingSpinner.js
+│   │   │   ├── SearchFilters.js
+│   │   │   └── CarCard.js
+│   │   ├── auth/
+│   │   │   ├── LoginForm.js
+│   │   │   └── RegisterForm.js
+│   │   ├── booking/
+│   │   │   ├── BookingForm.js
+│   │   │   ├── BookingCard.js
+│   │   │   └── DatePicker.js
+│   │   └── admin/
+│   │       ├── StatsCard.js
+│   │       └── UserManagement.js
+│   ├── pages/
+│   │   ├── public/
+│   │   │   ├── Home.js
+│   │   │   ├── Login.js
+│   │   │   └── Register.js
+│   │   ├── customer/
+│   │   │   ├── Dashboard.js
+│   │   │   ├── Cars.js
+│   │   │   ├── CarDetails.js
+│   │   │   ├── Booking.js
+│   │   │   ├── MyBookings.js
+│   │   │   └── Profile.js
+│   │   ├── staff/
+│   │   │   ├── StaffDashboard.js
+│   │   │   ├── BookingsManagement.js
+│   │   │   ├── CarManagement.js
+│   │   │   └── ReturnInspection.js
+│   │   └── admin/
+│   │       ├── AdminDashboard.js
+│   │       ├── CarsManagement.js
+│   │       ├── UsersManagement.js
+│   │       └── FinancialReports.js
+│   ├── hooks/
+│   │   ├── useAuth.js
+│   │   ├── useCars.js
+│   │   ├── useBookings.js
+│   │   └── useUsers.js
+│   ├── services/
+│   │   ├── api.js
+│   │   ├── auth.js
+│   │   ├── cars.js
+│   │   ├── bookings.js
+│   │   └── payments.js
+│   ├── context/
+│   │   └── AuthContext.js
+│   ├── utils/
+│   │   ├── constants.js
+│   │   ├── helpers.js
+│   │   └── validation.js
+│   ├── styles/
+│   │   ├── scss/
+│   │   │   ├── main.scss
+│   │   │   ├── _variables.scss
+│   │   │   ├── _mixins.scss
+│   │   │   ├── components/
+│   │   │   │   ├── _navbar.scss
+│   │   │   │   ├── _cards.scss
+│   │   │   │   └── _forms.scss
+│   │   │   └── pages/
+│   │   │       ├── _dashboard.scss
+│   │   │       └── _admin.scss
+│   │   ├── css/
+│   │   │   └── custom.css (all css for certain pages)
+│   │   └── bootstrap-custom.scss
+│   ├── assets/- import all Assets from previous project
+│   │   ├── js/
+│   │   │   └── jquery-plugins.js
+│   │   └── images/
+│   ├── App.js
+│   ├── App.css
+│   └── index.js
+├── public/
+│   ├── index.html
+│   ├── js/
+│   │   └── jquery-bootstrap.js
+│   └── lib/
+│       ├── bootstrap/
+│       └── jquery/
+├── package.json
+└── webpack.config.js

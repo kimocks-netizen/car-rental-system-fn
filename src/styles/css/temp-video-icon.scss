@@ -1,0 +1,139 @@
+// Define media query breakpoints
+$lg: 'only screen and (min-width: 992px) and (max-width: 1199px)';
+$md: 'only screen and (min-width: 768px) and (max-width: 991px)';
+$sm: 'only screen and (min-width: 576px) and (max-width: 767px)';
+$xs: '(max-width: 575px)';
+
+// Define theme color
+//$theme-color: #8B0000;
+
+// Main Styles
+.video-area {
+  height: 660px;
+
+  @media #{$lg} {
+    height: 400px;
+  }
+
+  @media #{$md} {
+    height: 400px;
+  }
+
+  @media #{$sm} {
+    height: 300px;
+  }
+
+  @media #{$xs} {
+    height: 300px;
+  }
+}
+
+// Video icon
+.video-icon {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  transform: translateY(-50%);
+  text-align: center;
+
+  a {
+    background: #fff;
+    //color: $theme-color;
+    width: 80px;
+    height: 80px;
+    display: inline-block;
+    text-align: center;
+    line-height: 80px;
+    border-radius: 50%;
+    position: relative;
+
+    // Reduce size for small devices
+    @media #{$sm} {
+      width: 70px;
+      height: 70px;
+      line-height: 70px;
+    }
+
+    @media #{$xs} {
+      width: 55px;
+      height: 55px;
+      line-height: 55px;
+    }
+
+    &::after {
+      position: absolute;
+      border: 70px solid inherit !important;
+      content: "";
+      border-radius: 50%;
+      left: -9px;
+      top: -12px;
+      background: transparent;
+      z-index: 0;
+
+      // Adjust border effect on smaller screens
+      @media #{$sm} {
+        border: 30px solid rgba(241, 65, 5, 0.1);
+        left: -15px;
+        top: -15px;
+      }
+
+      @media #{$xs} {
+        border: 25px solid rgba(241, 65, 5, 0.1);
+        left: -10px;
+        top: -10px;
+      }
+    }
+
+    i {
+      font-size: 31px;
+      position: relative;
+      right: -4px;
+      top: 8px;
+
+      // Reduce icon size on small screens
+      @media #{$sm}, #{$xs} {
+        font-size: 20px;
+        top: 4px;
+      }
+    }
+  }
+
+  // Button animation style
+  a.btn-icon {
+    position: relative;
+
+    &::before {
+      content: '';
+      display: inline-block;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      bottom: 2px;
+      right: 2px;
+      border-radius: inherit;
+      border: 1px  solid red;//$theme-color;
+      animation: btnIconRipple 2s cubic-bezier(0.23, 1, 0.32, 1) infinite;
+    }
+
+    /* Animations */
+    @keyframes btnIconRipple {
+      0% {
+        border-width: 4px;
+        transform: scale(1);
+      }
+      50% {
+        border-width: 1px;
+        transform: scale(1.5);
+      }
+      80% {
+        border-width: 1px;
+        transform: scale(1.9);
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+  }
+}

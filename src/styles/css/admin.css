@@ -1,0 +1,146 @@
+.center-white {
+    color: snow;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5em;
+}
+
+.center-white2 {
+    color: red;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.radio-group {
+    display: flex;
+    gap: 20px; /* Adds spacing between the radio buttons */
+}
+
+.radio-label {
+    color: white; /* Changes the text color to white */
+    font-size: 16px; /* Optional: adjust text size */
+    display: flex;
+    align-items: center;
+}
+
+.radio-input {
+    accent-color: #ff5722; /* Optional: customize radio button color */
+    margin-right: 10px; /* Adds spacing between the radio button and text */
+}
+
+.radio-text {
+    font-weight: 500; /* Optional: makes the text bold */
+}
+
+.file-upload-container {
+    margin-top: 20px;
+}
+
+.file-upload-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #4CAF50; /* Green color */
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+}
+
+.file-upload-button:hover {
+    background-color: #45a049;
+}
+.choose-file-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: blue; /* Green color */
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+}
+
+.choose-file-btn:hover {
+    background-color: red;
+}
+
+.link-upload-container {
+    margin-top: 20px;
+}
+
+.link-input {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 100%;
+}
+
+.link-input:focus {
+    border-color: #ff5722;
+}
+
+
+/* login.css */
+
+/* Page Title */
+.login-page-title {
+    text-align: center;
+    color: red;
+    margin-bottom: 20px;
+  }
+  
+  /* Error Message */
+  .error-message {
+    color: red;
+    text-align: center;
+  }
+  
+  /* Form Container */
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* Form Input Fields */
+  .login-input {
+    color: red;
+    margin-bottom: 15px;
+    width: 300px;
+  }
+  
+  .login-input label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .login-input input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  /* Submit Button */
+  .login-button {
+    background-color: red; /* Green color */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 300px; /* Same width as input fields */
+    margin-top: 10px;
+  }
+  
+  /* Hover Effect */
+  .login-button:hover {
+    background-color: #45a049;
+  }
+  

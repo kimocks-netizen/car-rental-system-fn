@@ -1,0 +1,52 @@
+/* Wrapper for the video icon */
+.video-wrap {
+    position: relative;
+  }
+  
+  /* Position the video icon over the picture */
+  .video-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  /* Styling for the button icon (circle) */
+  .btn-icon {
+    display: inline-block;
+    width: 80px; /* Size of the circular button */
+    height: 80px;
+    border-radius: 50%; /* Makes the button round */
+    background-color: white;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.3); /* Red glow around the button */
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+/* Play button as a triangle */
+.play-triangle {
+    width: 0;
+    height: 0;
+    border-left: 30px solid red; /* Adjust size and color */
+    border-top: 12px solid transparent;
+    border-bottom: 12px solid transparent;
+    transition: all 0.3s ease;
+    border-radius: 50%;
+    left: -9px;
+    top: -12px;
+    right: 0;
+}
+
+/* Hover effect for the button */
+.btn-icon:hover {
+    background-color: red; /* Red background on hover */
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.7); /* Stronger red glow on hover */
+}
+
+.btn-icon:hover .play-triangle {
+    border-left-color: white; /* Play triangle turns white on hover */
+}
