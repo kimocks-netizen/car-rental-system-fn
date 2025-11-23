@@ -42,8 +42,30 @@ const AdminCars = () => {
       setUploading(true);
       const token = localStorage.getItem('token');
       
-      // Create car with JSON data first
+      // Extract image file and car data
       const { imageFile, ...carData } = formData;
+      
+      // Upload image to Supabase first if provided
+      let imageUrl = null;
+      if (imageFile) {
+        try {
+          // Generate a temporary ID for the upload
+          const tempId = Date.now().toString();
+          imageUrl = await uploadCarImage(imageFile, tempId);
+          console.log('Image uploaded successfully:', imageUrl);
+        } catch (uploadError) {
+          console.error('Image upload failed:', uploadError);
+          throw new Error('Failed to upload image: ' + uploadError.message);
+        }
+      }
+      
+      // Add image URL to car data
+      const finalCarData = {
+        ...carData,
+        image_url: imageUrl
+      };
+      
+      console.log('Creating car with data:', finalCarData);
       
       const carResponse = await fetch('http://localhost:8000/api/cars', {
         method: 'POST',
@@ -51,7 +73,7 @@ const AdminCars = () => {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(carData)
+        body: JSON.stringify(finalCarData)
       });
       
       if (!carResponse.ok) {
@@ -59,9 +81,13 @@ const AdminCars = () => {
         throw new Error(errorData.message || 'Failed to create car');
       }
       
+      const result = await carResponse.json();
+      console.log('Car created successfully:', result);
+      
       setShowAddModal(false);
       fetchCars();
     } catch (err) {
+      console.error('Add car error:', err);
       setError(err.message);
     } finally {
       setUploading(false);

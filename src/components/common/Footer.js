@@ -74,7 +74,6 @@ const Footer = () => {
           <div className="col-md-4">
             <h4>Contact Info</h4>
             <div className="contact-info">
-              <p style={{color: 'white'}}><i className="fas fa-phone"></i>+44 7469 46835</p>
               <p style={{color: 'white'}}><i className="fas fa-envelope"></i> info@car-rental.com</p>
               <p style={{color: 'white'}}><i className="fas fa-map-marker-alt"></i> 123 Main St, Warrick City</p>
             </div>
