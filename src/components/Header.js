@@ -68,9 +68,9 @@ const Header = () => {
 
               {!isAuthenticated && (
                 <div className="header-btns d-none d-lg-block f-right">
-                  <a href="whatsapp://send?phone=+27671473686&text=Hello, Stream Line TV I would like to try your TV for free." className="btn">
+                  <Link to="/cars" className="btn">
                     BOOK NOW
-                  </a>
+                  </Link>
                 </div>
               )}
 
@@ -105,9 +105,9 @@ const Header = () => {
                         </>
                       )}  
                       {!isAuthenticated && (
-                        <li><a href="whatsapp://send?phone=+27671473686&text=Hello, Stream Line TV I would like to try your TV for free." className="btn">
-                          BOOK
-                        </a></li>
+                        <li><Link to="/cars" className="btn" onClick={toggleMenu}>
+                          BOOK NOW
+                        </Link></li>
                       )}
                     </ul>
                   </nav>                   
