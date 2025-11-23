@@ -18,7 +18,6 @@
 - [x] File upload components
 
 ### 🏠 Public Pages
-- [x] Home page with hero section
 - [x] Contact page
 - [x] Available cars public display page
 - [x] Car preview functionality

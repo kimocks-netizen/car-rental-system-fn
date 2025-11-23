@@ -31,6 +31,8 @@ import StaffDashboard from './pages/staff/StaffDashboard';
 import Header from './components/Header';
 import AvailableCars from './pages/public/AvailableCars';
 import CarPreview from './pages/public/CarPreview';
+import BookingPage from './pages/booking/BookingPage';
+import BookingConfirmation from './pages/booking/BookingConfirmation';
 
 import { WOW } from 'wowjs';
 
@@ -142,6 +144,16 @@ const App = ({showContactUs=true}) => {
           <Route path="/contact-us" element={<Contact />} />
           <Route path="/cars" element={<AvailableCars />} />
           <Route path="/cars/preview/:id" element={<CarPreview />} />
+          <Route path="/booking/:carId" element={
+            <CustomerRoute>
+              <BookingPage />
+            </CustomerRoute>
+          } />
+          <Route path="/booking-confirmation/:bookingId" element={
+            <CustomerRoute>
+              <BookingConfirmation />
+            </CustomerRoute>
+          } />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           
