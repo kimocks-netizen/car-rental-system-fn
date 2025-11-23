@@ -44,15 +44,24 @@ const CarCard = ({ car, onBookNow, onPreview }) => {
           position: 'absolute',
           top: '10px',
           right: '10px',
-          backgroundColor: car.availability_status === 'available' ? '#28a745' : '#dc3545',
+          backgroundColor: (() => {
+            const qty = car.available_quantity || 1;
+            if (qty === 0) return '#dc3545'; // Red
+            if (qty === 1) return '#dc3545'; // Red
+            if (qty === 2) return '#ff8c00'; // Orange
+            return '#28a745'; // Green
+          })(),
           color: 'white',
           padding: '5px 10px',
           borderRadius: '15px',
           fontSize: '0.8rem',
-          fontWeight: 'bold',
-          textTransform: 'uppercase'
+          fontWeight: 'bold'
         }}>
-          {car.availability_status}
+          {(() => {
+            const qty = car.available_quantity || 1;
+            if (qty === 0) return 'Sold Out';
+            return `${qty} left`;
+          })()}
         </div>
         
         {/* Preview Button */}

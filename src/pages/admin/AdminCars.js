@@ -231,6 +231,8 @@ const AddCarModal = ({ onClose, onSubmit, uploading }) => {
     capacity: '4',
     mileage: '',
     description: '',
+    total_quantity: '1',
+    customQuantity: '',
     imageFile: null
   });
 
@@ -238,6 +240,7 @@ const AddCarModal = ({ onClose, onSubmit, uploading }) => {
     e.preventDefault();
     
     // Clean data - ensure required fields are present
+    const quantity = formData.total_quantity === 'custom' ? parseInt(formData.customQuantity) : parseInt(formData.total_quantity);
     const cleanData = {
       brand: formData.brand,
       model: formData.model,
@@ -248,6 +251,8 @@ const AddCarModal = ({ onClose, onSubmit, uploading }) => {
       fuel_type: formData.fuel_type || 'petrol',
       transmission: formData.transmission || 'manual',
       description: formData.description || '',
+      total_quantity: quantity,
+      available_quantity: quantity,
       imageFile: formData.imageFile
     };
     
@@ -388,6 +393,35 @@ const AddCarModal = ({ onClose, onSubmit, uploading }) => {
                 <option value="automatic">Automatic</option>
               </select>
             </div>
+            <div className="col-md-6 mb-3">
+              <select
+                className="form-control"
+                value={formData.total_quantity}
+                onChange={(e) => setFormData({...formData, total_quantity: e.target.value, customQuantity: ''})}
+                required
+              >
+                <option value="1">1 Car</option>
+                <option value="2">2 Cars</option>
+                <option value="3">3 Cars</option>
+                <option value="4">4 Cars</option>
+                <option value="5">5 Cars</option>
+                <option value="custom">Custom Amount</option>
+              </select>
+            </div>
+            {formData.total_quantity === 'custom' && (
+              <div className="col-md-6 mb-3">
+                <input
+                  type="number"
+                  className="form-control"
+                  placeholder="Enter quantity"
+                  min="1"
+                  max="50"
+                  value={formData.customQuantity}
+                  onChange={(e) => setFormData({...formData, customQuantity: e.target.value})}
+                  required
+                />
+              </div>
+            )}
             <div className="col-12 mb-3">
               <textarea
                 className="form-control"

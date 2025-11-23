@@ -55,10 +55,7 @@ const StaffDashboard = () => {
               ))}
             </div>
             
-            <div className="alert alert-info">
-              <h5>Staff Features Coming Soon!</h5>
-              <p className="mb-0">Full staff functionality will be available in upcoming modules.</p>
-            </div>
+
           </div>
         </div>
       </div>

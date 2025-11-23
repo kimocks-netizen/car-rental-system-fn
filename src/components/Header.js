@@ -71,7 +71,16 @@ const Header = () => {
                       </>
                     )}
                     {isAuthenticated && user?.role === 'staff' && (
-                      <li><Link to="/staff/dashboard">Dashboard</Link></li>
+                      <>
+                        <li><Link to="/staff/dashboard" style={{color: location.pathname === '/staff/dashboard' ? 'red' : 'white'}}>Dashboard</Link></li>
+                        {location.pathname !== '/staff/dashboard' && (
+                          <>
+                            <li><Link to="/staff/bookings" style={{color: location.pathname === '/staff/bookings' ? 'red' : 'white'}}>Manage Bookings</Link></li>
+                            <li><Link to="/staff/cars" style={{color: location.pathname === '/staff/cars' ? 'red' : 'white'}}>Car Management</Link></li>
+                            <li><Link to="/staff/inspections" style={{color: location.pathname === '/staff/inspections' ? 'red' : 'white'}}>Return Inspection</Link></li>
+                          </>
+                        )}
+                      </>
                     )}
                   </ul>
                 </nav>
@@ -132,6 +141,13 @@ const Header = () => {
                       {isAuthenticated && user?.role === 'staff' && (
                         <>
                           <li><Link to="/staff/dashboard" onClick={toggleMenu}>Dashboard</Link></li>
+                          {location.pathname !== '/staff/dashboard' && (
+                            <>
+                              <li><Link to="/staff/bookings" onClick={toggleMenu}>Manage Bookings</Link></li>
+                              <li><Link to="/staff/cars" onClick={toggleMenu}>Car Management</Link></li>
+                              <li><Link to="/staff/inspections" onClick={toggleMenu}>Return Inspection</Link></li>
+                            </>
+                          )}
                           <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>
                         </>
                       )}  

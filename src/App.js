@@ -29,6 +29,9 @@ import AdminReports from './pages/admin/AdminReports';
 import AdminBookings from './pages/admin/AdminBookings';
 import AdminCars from './pages/admin/AdminCars';
 import StaffDashboard from './pages/staff/StaffDashboard';
+import StaffBookings from './pages/staff/StaffBookings';
+import StaffCars from './pages/staff/StaffCars';
+import ReturnInspection from './pages/staff/ReturnInspection';
 import Header from './components/Header';
 import AvailableCars from './pages/public/AvailableCars';
 import CarPreview from './pages/public/CarPreview';
@@ -172,6 +175,21 @@ const App = ({showContactUs=true}) => {
           <Route path="/staff/dashboard" element={
             <StaffRoute>
               <StaffDashboard />
+            </StaffRoute>
+          } />
+          <Route path="/staff/bookings" element={
+            <StaffRoute>
+              <StaffBookings />
+            </StaffRoute>
+          } />
+          <Route path="/staff/cars" element={
+            <StaffRoute>
+              <StaffCars />
+            </StaffRoute>
+          } />
+          <Route path="/staff/inspections" element={
+            <StaffRoute>
+              <ReturnInspection />
             </StaffRoute>
           } />
           <Route path="/admin/dashboard" element={

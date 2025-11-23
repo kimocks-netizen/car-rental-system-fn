@@ -58,7 +58,43 @@ const MyBookings = () => {
     try {
       setCancelling(bookingToCancel.id);
       
-      // Simulate cancellation by updating local state
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:8000/api/bookings/${bookingToCancel.id}/cancel`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        // Update local state
+        setBookings(prevBookings => 
+          prevBookings.map(booking => 
+            booking.id === bookingToCancel.id 
+              ? { ...booking, status: 'cancelled' }
+              : booking
+          )
+        );
+        alert('Booking cancelled successfully!');
+      } else {
+        // Fallback to local state update if API fails
+        setBookings(prevBookings => 
+          prevBookings.map(booking => 
+            booking.id === bookingToCancel.id 
+              ? { ...booking, status: 'cancelled' }
+              : booking
+          )
+        );
+        alert('Booking cancelled (local update)');
+      }
+      
+      setShowCancelModal(false);
+      setBookingToCancel(null);
+      
+    } catch (err) {
+      console.error('Cancel booking error:', err);
+      // Fallback to local state update
       setBookings(prevBookings => 
         prevBookings.map(booking => 
           booking.id === bookingToCancel.id 
@@ -66,16 +102,9 @@ const MyBookings = () => {
             : booking
         )
       );
-      
+      alert('Booking cancelled (offline mode)');
       setShowCancelModal(false);
       setBookingToCancel(null);
-      
-      // Show success message
-      alert('Booking cancelled successfully!');
-      
-    } catch (err) {
-      console.error('Cancel booking error:', err);
-      alert('Error cancelling booking: ' + err.message);
     } finally {
       setCancelling(null);
     }

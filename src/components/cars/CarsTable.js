@@ -1,7 +1,7 @@
 import React from 'react';
 import DataTable from '../DataTable';
 
-const CarsTable = ({ cars, userRole = 'admin', onPreview, onEdit, onDelete }) => {
+const CarsTable = ({ cars, userRole = 'admin', onPreview, onEdit, onDelete, showBookings = false, isPreviewOpen = false }) => {
   
   const carColumns = [
     { 
@@ -19,28 +19,52 @@ const CarsTable = ({ cars, userRole = 'admin', onPreview, onEdit, onDelete }) =>
     { key: 'model', header: 'Model' },
     { key: 'type', header: 'Type' },
     { key: 'year', header: 'Year' },
-    { 
+    ...(!isPreviewOpen ? [{ 
       key: 'daily_rate', 
       header: 'Daily Rate',
       render: (rate) => `£${rate}`
-    },
-    { 
+    }] : []),
+    ...(!isPreviewOpen ? [{ 
       key: 'availability_status', 
       header: 'Status',
-      render: (status) => (
+      render: (status, car) => {
+        const isAvailable = (car.available_quantity || 1) > 0;
+        return (
+          <span style={{
+            backgroundColor: isAvailable ? '#28a745' : '#dc3545',
+            color: 'white',
+            padding: '4px 8px',
+            borderRadius: '12px',
+            fontSize: '0.8rem',
+            fontWeight: '500',
+            textTransform: 'capitalize'
+          }}>
+            {isAvailable ? 'Available' : 'Not Available'}
+          </span>
+        );
+      }
+    }] : []),
+    ...(!isPreviewOpen ? [{ 
+      key: 'available_quantity', 
+      header: 'Available',
+      render: (available, car) => `${available || 1}/${car.total_quantity || 1}`
+    }] : []),
+    ...(showBookings && !isPreviewOpen ? [{
+      key: 'activeBookings',
+      header: 'Booked',
+      render: (count) => (
         <span style={{
-          backgroundColor: status === 'available' ? '#28a745' : '#dc3545',
+          backgroundColor: count > 0 ? '#ff8c00' : '#6c757d',
           color: 'white',
           padding: '4px 8px',
           borderRadius: '12px',
           fontSize: '0.8rem',
-          fontWeight: '500',
-          textTransform: 'capitalize'
+          fontWeight: '500'
         }}>
-          {status}
+          {count || 0}
         </span>
       )
-    }
+    }] : [])
   ];
 
   const getCarActions = () => {
