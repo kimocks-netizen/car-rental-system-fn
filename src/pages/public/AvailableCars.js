@@ -9,8 +9,10 @@ const AvailableCars = () => {
   const [previewCar, setPreviewCar] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
   const [previewLoading, setPreviewLoading] = useState(false);
+  const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
+    setShowContent(true);
     fetchAvailableCars();
   }, []);
 
@@ -106,7 +108,10 @@ const AvailableCars = () => {
       backgroundPosition: 'center',
       backgroundAttachment: 'fixed'
     }}>
-      <div className="container">
+      <div className="container" style={{
+        transform: showContent ? 'translateX(0)' : 'translateX(100%)',
+        transition: 'transform 0.6s ease-in-out'
+      }}>
         <div className="row mb-4">
           <div className="col-12 text-center">
             <h1 className="text-white mb-2">Available Cars for Rent</h1>

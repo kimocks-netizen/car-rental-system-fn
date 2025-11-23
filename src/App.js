@@ -22,6 +22,7 @@ import ProtectedRoute, { AdminRoute, StaffRoute, CustomerRoute } from './compone
 
 // Import dashboard pages
 import CustomerDashboard from './pages/customer/CustomerDashboard';
+import MyBookings from './pages/customer/MyBookings';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminReports from './pages/admin/AdminReports';
@@ -161,6 +162,11 @@ const App = ({showContactUs=true}) => {
           <Route path="/customer/dashboard" element={
             <CustomerRoute>
               <CustomerDashboard />
+            </CustomerRoute>
+          } />
+          <Route path="/bookings" element={
+            <CustomerRoute>
+              <MyBookings />
             </CustomerRoute>
           } />
           <Route path="/staff/dashboard" element={

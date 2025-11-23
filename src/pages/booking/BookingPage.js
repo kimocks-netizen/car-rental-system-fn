@@ -50,17 +50,21 @@ const BookingPage = () => {
       
       const token = localStorage.getItem('token');
       const bookingPayload = {
-        car_id: parseInt(carId),
+        car_id: car?.id,
         start_date: bookingDetails.startDate,
         end_date: bookingDetails.endDate,
         pickup_location: bookingDetails.pickupLocation,
         dropoff_location: bookingDetails.dropoffLocation,
-        total_cost: bookingDetails.totalCost,
+        total_amount: Number(bookingDetails.totalCost),
         payment_details: {
           card_last_four: paymentData.cardNumber.slice(-4),
           cardholder_name: paymentData.cardholderName
         }
       };
+      
+      console.log('Booking details:', bookingDetails);
+      console.log('Booking payload:', bookingPayload);
+      console.log('Rental amount type:', typeof bookingPayload.rental_amount);
 
       const response = await fetch('http://localhost:8000/api/bookings', {
         method: 'POST',
@@ -207,12 +211,12 @@ const BookingPage = () => {
 
         <div className="row">
           {/* Car Preview */}
-          <div className="col-lg-4 mb-4">
+          <div className="col-lg-6 mb-4">
             <CarPreview car={car} mode="booking" />
           </div>
 
           {/* Booking/Payment Form */}
-          <div className="col-lg-8">
+          <div className="col-lg-6">
             {step === 1 ? (
               <BookingForm
                 car={car}

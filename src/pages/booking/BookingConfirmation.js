@@ -161,7 +161,7 @@ const BookingConfirmation = () => {
                 <div className="col-md-6 mb-3">
                   <label style={{ color: '#ccc', fontSize: '0.9rem' }}>Total Cost</label>
                   <div style={{ color: '#dc3545', fontSize: '1.3rem', fontWeight: 'bold' }}>
-                    £{booking?.total_cost}
+                    £{booking?.total_amount}
                   </div>
                 </div>
               </div>
@@ -170,13 +170,13 @@ const BookingConfirmation = () => {
                 <div className="col-md-6 mb-3">
                   <label style={{ color: '#ccc', fontSize: '0.9rem' }}>Pickup Date</label>
                   <div style={{ color: 'white', fontSize: '1.1rem' }}>
-                    {new Date(booking?.start_date).toLocaleDateString()}
+                    {new Date(booking?.pickup_date).toLocaleDateString()}
                   </div>
                 </div>
                 <div className="col-md-6 mb-3">
                   <label style={{ color: '#ccc', fontSize: '0.9rem' }}>Return Date</label>
                   <div style={{ color: 'white', fontSize: '1.1rem' }}>
-                    {new Date(booking?.end_date).toLocaleDateString()}
+                    {new Date(booking?.return_date).toLocaleDateString()}
                   </div>
                 </div>
               </div>

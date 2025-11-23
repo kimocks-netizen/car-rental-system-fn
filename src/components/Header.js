@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Header = () => {
   const { user, logout, isAuthenticated } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/home');
+  };
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -52,8 +58,20 @@ const Header = () => {
                         <li><Link to="/admin/reports" style={{color: location.pathname === '/admin/reports' ? 'red' : 'white'}}>Reports</Link></li>
                       </>
                     )}
-                    {isAuthenticated && user?.role !== 'admin' && (
-                      <li><Link to={`/${user?.role}/dashboard`}>Dashboard</Link></li>
+                    {isAuthenticated && user?.role === 'customer' && (
+                      <>
+                        <li><Link to="/customer/dashboard" style={{color: location.pathname === '/customer/dashboard' ? 'red' : 'white'}}>Dashboard</Link></li>
+                        {location.pathname !== '/customer/dashboard' && (
+                          <>
+                            <li><Link to="/cars" style={{color: location.pathname === '/cars' ? 'red' : 'white'}}>Browse Cars</Link></li>
+                            <li><Link to="/bookings" style={{color: location.pathname === '/bookings' ? 'red' : 'white'}}>My Bookings</Link></li>
+                            <li><Link to="/profile" style={{color: location.pathname === '/profile' ? 'red' : 'white'}}>Profile</Link></li>
+                          </>
+                        )}
+                      </>
+                    )}
+                    {isAuthenticated && user?.role === 'staff' && (
+                      <li><Link to="/staff/dashboard">Dashboard</Link></li>
                     )}
                   </ul>
                 </nav>
@@ -62,7 +80,7 @@ const Header = () => {
               {isAuthenticated && (
                 <div className="d-flex align-items-center d-none d-lg-block" style={{textAlign: 'right'}}>
                   <span style={{color: 'white', fontSize: '16px !important', fontWeight: 'normal !important', marginRight: '20px'}}>Welcome, {user?.full_name}</span>
-                  <button onClick={logout} className="btn btn-danger" style={{fontSize: '14px', padding: '12px 20px', height: '40px'}}>Logout</button>
+                  <button onClick={handleLogout} className="btn btn-danger" style={{fontSize: '14px', padding: '12px 20px', height: '40px'}}>Logout</button>
                 </div>
               )}
 
@@ -98,10 +116,23 @@ const Header = () => {
                           <li><Link to="/" onClick={() => { logout(); toggleMenu(); }}>Logout</Link></li>
                         </>
                       )}
-                      {isAuthenticated && user?.role !== 'admin' && (
+                      {isAuthenticated && user?.role === 'customer' && (
                         <>
-                          <li><Link to={`/${user?.role}/dashboard`} onClick={toggleMenu}>Dashboard</Link></li>
-                          <li><Link to="/" onClick={() => { logout(); toggleMenu(); }}>Logout</Link></li>
+                          <li><Link to="/customer/dashboard" onClick={toggleMenu}>Dashboard</Link></li>
+                          {location.pathname !== '/customer/dashboard' && (
+                            <>
+                              <li><Link to="/cars" onClick={toggleMenu}>Browse Cars</Link></li>
+                              <li><Link to="/bookings" onClick={toggleMenu}>My Bookings</Link></li>
+                              <li><Link to="/profile" onClick={toggleMenu}>Profile</Link></li>
+                            </>
+                          )}
+                          <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>
+                        </>
+                      )}
+                      {isAuthenticated && user?.role === 'staff' && (
+                        <>
+                          <li><Link to="/staff/dashboard" onClick={toggleMenu}>Dashboard</Link></li>
+                          <li><Link to="/" onClick={() => { handleLogout(); toggleMenu(); }}>Logout</Link></li>
                         </>
                       )}  
                       {!isAuthenticated && (

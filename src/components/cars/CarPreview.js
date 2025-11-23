@@ -1,6 +1,10 @@
 import React from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const CarPreview = ({ car, onClose, isAdmin = false, mode = 'customer' }) => {
+  const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
   const defaultImage = '/photos/car1.jpg';
   
   return (
@@ -190,6 +194,15 @@ const CarPreview = ({ car, onClose, isAdmin = false, mode = 'customer' }) => {
               {mode !== 'booking' && (
                 <button
                   disabled={isAdmin}
+                  onClick={() => {
+                    if (!isAdmin) {
+                      if (isAuthenticated && user?.role === 'customer') {
+                        navigate(`/booking/${car.id}`);
+                      } else {
+                        navigate('/login');
+                      }
+                    }
+                  }}
                   style={{
                     backgroundColor: '#28a745',
                     border: 'none',

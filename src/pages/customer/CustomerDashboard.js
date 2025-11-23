@@ -55,9 +55,30 @@ const CustomerDashboard = () => {
               ))}
             </div>
             
-            <div className="alert alert-info">
-              <h5>Coming Soon!</h5>
-              <p className="mb-0">Full dashboard functionality will be available in upcoming modules.</p>
+            <div style={{
+              backgroundColor: 'rgba(0, 0, 0, 0.9)',
+              border: '2px solid #dc3545',
+              borderRadius: '15px',
+              padding: '30px',
+              textAlign: 'center',
+              marginTop: '30px'
+            }}>
+              <div style={{
+                backgroundColor: '#dc3545',
+                borderRadius: '50%',
+                width: '80px',
+                height: '80px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 20px'
+              }}>
+                <i className="fas fa-rocket" style={{ fontSize: '2rem', color: 'white' }}></i>
+              </div>
+              <h3 style={{ color: 'white', marginBottom: '15px' }}>Coming Soon!</h3>
+              <p style={{ color: '#ccc', fontSize: '1.1rem', marginBottom: 0 }}>
+                Full dashboard functionality will be available in upcoming modules.
+              </p>
             </div>
           </div>
         </div>

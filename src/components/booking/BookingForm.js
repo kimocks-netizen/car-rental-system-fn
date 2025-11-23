@@ -84,7 +84,8 @@ const BookingForm = ({ car, onBookingSubmit, loading }) => {
       backgroundColor: 'rgba(0, 0, 0, 0.9)',
       border: '2px solid #dc3545',
       borderRadius: '15px',
-      padding: '30px'
+      padding: '30px',
+      marginTop: '110px'
     }}>
       <h4 style={{ color: 'white', marginBottom: '20px' }}>
         <i className="fas fa-calendar-alt" style={{ marginRight: '10px', color: '#dc3545' }}></i>
@@ -104,7 +105,8 @@ const BookingForm = ({ car, onBookingSubmit, loading }) => {
               style={{
                 backgroundColor: 'rgba(255,255,255,0.1)',
                 border: '1px solid #555',
-                color: 'white'
+                color: 'white',
+                colorScheme: 'dark'
               }}
             />
             {errors.startDate && (
@@ -123,7 +125,8 @@ const BookingForm = ({ car, onBookingSubmit, loading }) => {
               style={{
                 backgroundColor: 'rgba(255,255,255,0.1)',
                 border: '1px solid #555',
-                color: 'white'
+                color: 'white',
+                colorScheme: 'dark'
               }}
             />
             {errors.endDate && (

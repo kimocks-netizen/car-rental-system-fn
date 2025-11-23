@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 class DashboardCard extends React.Component {
 
@@ -46,13 +47,13 @@ class DashboardCard extends React.Component {
                 textShadow: '1px 1px 2px rgba(0,0,0,0.5)',
                 marginTop: '10px'
               }}>{description}</p>
-              <a href={link} className="border-btn border-btn2 red-hover" style={{
+              <Link to={link} className="border-btn border-btn2 red-hover" style={{
                 fontSize: '16px',
                 fontWeight: 'bold',
                 padding: '12px 24px',
                 textTransform: 'uppercase',
                 letterSpacing: '1px'
-              }}>{linkText}</a>
+              }}>{linkText}</Link>
             </div>
           </div>
         </div>

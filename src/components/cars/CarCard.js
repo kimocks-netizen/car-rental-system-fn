@@ -1,6 +1,10 @@
 import React from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const CarCard = ({ car, onBookNow, onPreview }) => {
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const defaultImage = '/photos/car1.jpg';
   
   return (
@@ -199,7 +203,13 @@ const CarCard = ({ car, onBookNow, onPreview }) => {
           
           {onBookNow && (
             <button
-              onClick={() => onBookNow(car)}
+              onClick={() => {
+                if (isAuthenticated) {
+                  onBookNow(car);
+                } else {
+                  navigate('/login');
+                }
+              }}
               style={{
                 backgroundColor: '#dc3545',
                 border: 'none',
