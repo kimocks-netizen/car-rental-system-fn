@@ -19,7 +19,7 @@ const Home = () => {
             <div className="container">
               <div className="row">
                 <div className="col-xl-12 col-lg-9 col-md-10">
-                  <div className="hero__caption">
+                  <div className="hero__caption" style={{ marginTop: '80px' }}>
                     <span className="fadeInLeft" data-delay="0.1s">
                       Premium Car Rental & Vehicle Hire
                     </span>

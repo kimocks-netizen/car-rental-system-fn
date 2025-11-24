@@ -214,7 +214,7 @@ const BookingConfirmation = () => {
 
               <div className="d-flex gap-3 mt-4">
                 <button
-                  onClick={() => navigate('/dashboard')}
+                  onClick={() => navigate('/customer/dashboard')}
                   style={{
                     backgroundColor: '#dc3545',
                     border: 'none',

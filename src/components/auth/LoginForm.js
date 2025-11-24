@@ -44,9 +44,9 @@ const LoginForm = () => {
 
   return (
     <section className="pricing-area section-padding30 fix">
-      <div className="container">
+      <div className="container" style={{ marginTop: '-80px' }}>
         <div className="properties__card wow fadeInUp" data-wow-duration="2s" data-wow-delay=".4s">
-          <div className="features-caption tnc-txt-color">
+          <div className="features-caption tnc-txt-color" style={{ marginTop: '0px' }}>
             <h2 className="login-page-title">Car Rental Login:</h2>
             {errorMessage && <p className="error-message">{errorMessage}</p>}
             <form onSubmit={handleLogin} className="login-form">

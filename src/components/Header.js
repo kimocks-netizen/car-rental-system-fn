@@ -32,8 +32,8 @@ const Header = () => {
 
   return (
     <header>
-      <div className="header-area header-transparent">
-        <div className="main-header header-sticky">
+      <div className="header-area" style={{ backgroundColor: 'rgba(0, 0, 0, 0.9)' }}>
+        <div className="main-header header-sticky" style={{ padding: '0px 0' }}>
           <div className="container-fluid">
             <div className="menu-wrapper d-flex align-items-center justify-content-between">
               <div className="logo">
