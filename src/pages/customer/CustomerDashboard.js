@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import DashboardCard from '../../components/DashboardCard';
 
@@ -40,6 +40,19 @@ const CustomerDashboard = () => {
       <div className="container">
         <div className="row">
           <div className="col-12">
+            {/* Welcome Header */}
+            {/* <div style={{
+              backgroundColor: 'rgba(0, 0, 0, 0.9)',
+              border: '2px solid #dc3545',
+              borderRadius: '15px',
+              padding: '20px',
+              marginBottom: '30px',
+              textAlign: 'center'
+            }}>
+              <h2 style={{ color: 'white', margin: 0 }}>Welcome, {user?.full_name}</h2>
+              <p style={{ color: '#ccc', margin: 0, fontSize: '1.1rem' }}>Ready for your next adventure?</p>
+            </div> */}
+            
             <div className="row">
               {dashboardItems.map((item, index) => (
                 <DashboardCard

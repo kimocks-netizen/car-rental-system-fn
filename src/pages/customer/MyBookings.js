@@ -64,10 +64,15 @@ const MyBookings = () => {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify({ apply_cancellation_fee: true })
       });
       
       if (response.ok) {
+        const result = await response.json();
+        const cancellationFee = bookingToCancel.total_amount * 0.2;
+        const refundAmount = bookingToCancel.total_amount - cancellationFee;
+        
         // Update local state
         setBookings(prevBookings => 
           prevBookings.map(booking => 
@@ -76,9 +81,13 @@ const MyBookings = () => {
               : booking
           )
         );
-        alert('Booking cancelled successfully!');
+        
+        alert(`Booking cancelled successfully!\nCancellation fee: £${cancellationFee.toFixed(2)}\nRefund amount: £${refundAmount.toFixed(2)} added to your balance.`);
       } else {
-        // Fallback to local state update if API fails
+        // Fallback calculation
+        const cancellationFee = bookingToCancel.total_amount * 0.2;
+        const refundAmount = bookingToCancel.total_amount - cancellationFee;
+        
         setBookings(prevBookings => 
           prevBookings.map(booking => 
             booking.id === bookingToCancel.id 
@@ -86,7 +95,8 @@ const MyBookings = () => {
               : booking
           )
         );
-        alert('Booking cancelled (local update)');
+        
+        alert(`Booking cancelled (local update)\nCancellation fee: £${cancellationFee.toFixed(2)}\nRefund: £${refundAmount.toFixed(2)} will be processed.`);
       }
       
       setShowCancelModal(false);
@@ -94,7 +104,9 @@ const MyBookings = () => {
       
     } catch (err) {
       console.error('Cancel booking error:', err);
-      // Fallback to local state update
+      const cancellationFee = bookingToCancel.total_amount * 0.2;
+      const refundAmount = bookingToCancel.total_amount - cancellationFee;
+      
       setBookings(prevBookings => 
         prevBookings.map(booking => 
           booking.id === bookingToCancel.id 
@@ -102,7 +114,8 @@ const MyBookings = () => {
             : booking
         )
       );
-      alert('Booking cancelled (offline mode)');
+      
+      alert(`Booking cancelled (offline mode)\nCancellation fee: £${cancellationFee.toFixed(2)}\nRefund: £${refundAmount.toFixed(2)} will be processed.`);
       setShowCancelModal(false);
       setBookingToCancel(null);
     } finally {
@@ -348,7 +361,7 @@ const MyBookings = () => {
           }}
           onConfirm={handleCancelConfirm}
           title="Cancel Booking"
-          message={`Are you sure you want to cancel your booking for ${bookingToCancel?.car?.brand} ${bookingToCancel?.car?.model}? This action cannot be undone.`}
+          message={`Are you sure you want to cancel your booking for ${bookingToCancel?.car?.brand} ${bookingToCancel?.car?.model}?\n\nCancellation fee: £${bookingToCancel ? (bookingToCancel.total_amount * 0.2).toFixed(2) : '0.00'}\nRefund amount: £${bookingToCancel ? (bookingToCancel.total_amount * 0.8).toFixed(2) : '0.00'}\n\nThis action cannot be undone.`}
           confirmText="Cancel Booking"
           cancelText="Keep Booking"
           loading={cancelling === bookingToCancel?.id}

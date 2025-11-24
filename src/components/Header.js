@@ -5,6 +5,8 @@ import { useAuth } from '../context/AuthContext';
 const Header = () => {
   const { user, logout, isAuthenticated } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [balance, setBalance] = useState(0);
+  const [loadingBalance, setLoadingBalance] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -29,6 +31,32 @@ const Header = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, [menuOpen]);
+
+  useEffect(() => {
+    if (isAuthenticated && user?.role === 'customer') {
+      fetchBalance();
+    }
+  }, [isAuthenticated, user]);
+
+  const fetchBalance = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:8000/api/customer/balance', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        setBalance(result.balance || 0);
+      }
+    } catch (error) {
+      console.error('Error fetching balance:', error);
+    } finally {
+      setLoadingBalance(false);
+    }
+  };
 
   return (
     <header>
@@ -87,8 +115,28 @@ const Header = () => {
               </div>
 
               {isAuthenticated && (
-                <div className="d-flex align-items-center d-none d-lg-block" style={{textAlign: 'right'}}>
-                  <span style={{color: 'white', fontSize: '16px !important', fontWeight: 'normal !important', marginRight: '20px'}}>Welcome, {user?.full_name}</span>
+                <div className="d-none d-lg-flex align-items-center" style={{gap: '15px'}}>
+                  <h2 style={{color: 'white', margin: 0, fontSize: '16px', fontWeight: 'normal'}}>Welcome, {user?.full_name}</h2>
+                  {user?.role === 'customer' && (
+                    <div style={{
+                      backgroundColor: '#28a745',
+                      color: 'white',
+                      padding: '8px 15px',
+                      borderRadius: '20px',
+                      fontSize: '14px',
+                      fontWeight: 'bold',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '5px'
+                    }}>
+                      <i className="fas fa-wallet"></i>
+                      {loadingBalance ? (
+                        <span>Loading...</span>
+                      ) : (
+                        <span>£{balance.toFixed(2)}</span>
+                      )}
+                    </div>
+                  )}
                   <button onClick={handleLogout} className="btn btn-danger" style={{fontSize: '14px', padding: '12px 20px', height: '40px'}}>Logout</button>
                 </div>
               )}

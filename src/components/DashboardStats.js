@@ -7,7 +7,7 @@ const DashboardStats = ({ stats }) => {
     { label: 'Total Users', value: stats.totalUsers, icon: '👥' },
     { label: 'Total Cars', value: stats.totalCars, icon: '🚗' },
     { label: 'Active Bookings', value: stats.activeBookings, icon: '📅' },
-    { label: 'Total Revenue', value: `$${stats.totalRevenue}`, icon: '💰' }
+    { label: 'Total Revenue', value: `£${stats.totalRevenue}`, icon: '💰' }
   ];
 
   return (

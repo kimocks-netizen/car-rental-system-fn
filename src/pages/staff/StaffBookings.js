@@ -54,35 +54,56 @@ const StaffBookings = () => {
   };
 
   const handleStatusUpdate = (booking, newStatus) => {
+    console.log('📝 handleStatusUpdate called');
+    console.log('Booking:', booking);
+    console.log('New Status:', newStatus);
     setSelectedBooking({ ...booking, newStatus });
     setModalType(newStatus);
     setShowModal(true);
+    console.log('✅ Modal should now be visible');
   };
 
   const confirmStatusUpdate = async () => {
+    console.log('🚀 confirmStatusUpdate called');
+    console.log('Selected booking:', selectedBooking);
+    
     try {
-      const response = await fetch(`http://localhost:8000/api/bookings/${selectedBooking.id}`, {
+      const url = `http://localhost:8000/api/bookings/${selectedBooking.id}/status`;
+      const payload = { status: selectedBooking.newStatus };
+      
+      console.log('📡 Making API call to:', url);
+      console.log('📦 Payload:', payload);
+      
+      const response = await fetch(url, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
-        body: JSON.stringify({ status: selectedBooking.newStatus })
+        body: JSON.stringify(payload)
       });
+      
+      console.log('📨 Response status:', response.status);
+      console.log('📨 Response ok:', response.ok);
 
       if (response.ok) {
+        console.log('✅ API call successful, updating local state');
         setBookings(bookings.map(booking => 
           booking.id === selectedBooking.id 
             ? { ...booking, status: selectedBooking.newStatus }
             : booking
         ));
       } else {
+        console.log('❌ API call failed');
+        const errorText = await response.text();
+        console.log('Error response:', errorText);
         setError('Failed to update booking status');
       }
     } catch (error) {
-      console.error('Error updating booking:', error);
+      console.error('💥 Error updating booking:', error);
       setError('Error updating booking status');
     } finally {
+      console.log('🏁 Closing modal and resetting state');
       setShowModal(false);
       setSelectedBooking(null);
     }
@@ -131,7 +152,7 @@ const StaffBookings = () => {
     { 
       key: 'total_amount', 
       header: 'Amount',
-      render: (value) => `$${value}`
+      render: (value) => `£${value}`
     },
     { 
       key: 'pickup_date', 
@@ -155,17 +176,19 @@ const StaffBookings = () => {
             handleStatusUpdate(booking, 'confirmed');
           }
         },
-        title: 'Approve Booking'
+        title: 'Approve Booking',
+        disabled: (booking) => booking.status !== 'pending'
       },
       {
         label: <i className="fas fa-times" style={{color: '#dc3545'}}></i>,
         className: 'btn-link', 
         onClick: (booking) => {
-          if (booking.status === 'pending') {
+          if (booking.status === 'pending' || booking.status === 'confirmed') {
             handleStatusUpdate(booking, 'cancelled');
           }
         },
-        title: 'Reject Booking'
+        title: 'Cancel Booking',
+        disabled: (booking) => booking.status !== 'pending' && booking.status !== 'confirmed'
       },
       {
         label: <i className="fas fa-play" style={{color: '#007bff'}}></i>,
@@ -175,7 +198,8 @@ const StaffBookings = () => {
             handleStatusUpdate(booking, 'active');
           }
         },
-        title: 'Start Rental'
+        title: 'Start Rental',
+        disabled: (booking) => booking.status !== 'confirmed'
       }
     ];
   };
@@ -223,8 +247,8 @@ const StaffBookings = () => {
       </div>
 
       <ConfirmationModal
-        show={showModal}
-        onHide={() => setShowModal(false)}
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
         onConfirm={confirmStatusUpdate}
         title={`Update Booking Status`}
         message={`Are you sure you want to ${modalType} this booking?`}
