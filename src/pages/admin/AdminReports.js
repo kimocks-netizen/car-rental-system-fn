@@ -304,8 +304,11 @@ const AdminReports = () => {
                         },
                         scales: {
                           y: {
+                            beginAtZero: true,
                             ticks: {
-                              color: 'white'
+                              color: 'white',
+                              stepSize: 1,
+                              precision: 0
                             },
                             grid: {
                               color: 'rgba(255, 255, 255, 0.1)'
