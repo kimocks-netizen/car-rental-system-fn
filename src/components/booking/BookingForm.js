@@ -190,20 +190,40 @@ const BookingForm = ({ car, onBookingSubmit, loading }) => {
             backgroundColor: 'rgba(220, 53, 69, 0.1)',
             border: '1px solid #dc3545',
             borderRadius: '10px',
-            padding: '15px',
+            padding: '20px',
             marginBottom: '20px'
           }}>
-            <div className="row text-white">
-              <div className="col-md-4">
-                <strong>Duration:</strong> {days} day{days > 1 ? 's' : ''}
+            <h6 style={{ color: 'white', marginBottom: '15px' }}>Booking Summary</h6>
+            <div className="row text-white mb-3">
+              <div className="col-md-6">
+                <div style={{ marginBottom: '8px' }}>
+                  <span style={{ color: '#ccc' }}>Duration:</span>
+                  <span style={{ float: 'right', fontWeight: 'bold' }}>{days} day{days > 1 ? 's' : ''}</span>
+                </div>
+                <div style={{ marginBottom: '8px' }}>
+                  <span style={{ color: '#ccc' }}>Daily Rate:</span>
+                  <span style={{ float: 'right', fontWeight: 'bold' }}>£{car.daily_rate}</span>
+                </div>
               </div>
-              <div className="col-md-4">
-                <strong>Daily Rate:</strong> £{car.daily_rate}
-              </div>
-              <div className="col-md-4">
-                <strong>Total Cost:</strong> £{totalCost}
+              <div className="col-md-6">
+                <div style={{ marginBottom: '8px' }}>
+                  <span style={{ color: '#ccc' }}>Rental Amount:</span>
+                  <span style={{ float: 'right', fontWeight: 'bold' }}>£{totalCost}</span>
+                </div>
+                <div style={{ marginBottom: '8px' }}>
+                  <span style={{ color: '#ffc107' }}>Security Deposit:</span>
+                  <span style={{ float: 'right', fontWeight: 'bold', color: '#ffc107' }}>£{Math.round(totalCost * 0.3)}</span>
+                </div>
               </div>
             </div>
+            <hr style={{ borderColor: 'rgba(255, 255, 255, 0.2)', margin: '15px 0' }} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ color: 'white', fontSize: '1.1rem', fontWeight: 'bold' }}>Total Amount:</span>
+              <span style={{ color: '#dc3545', fontSize: '1.3rem', fontWeight: 'bold' }}>£{totalCost + Math.round(totalCost * 0.3)}</span>
+            </div>
+            <small style={{ color: '#ccc', display: 'block', marginTop: '8px' }}>
+              * Security deposit is fully refundable if no damage occurs
+            </small>
           </div>
         )}
 

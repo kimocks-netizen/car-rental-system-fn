@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import ConfirmationModal from '../../components/common/ConfirmationModal';
+import DataTable from '../../components/DataTable';
 
 const ReturnInspection = () => {
   const { user } = useAuth();
@@ -11,10 +11,20 @@ const ReturnInspection = () => {
   const [showModal, setShowModal] = useState(false);
   const [inspectionData, setInspectionData] = useState({
     fuel_level: 'full',
-    damage_notes: '',
-    additional_charges: 0,
-    condition: 'good'
+    condition: 'good',
+    damage_level: 0,
+    damage_types: [],
+    additional_notes: '',
+    calculated_charge: 0
   });
+
+  const damageTypes = [
+    'Scratches',
+    'Dents', 
+    'Interior Damage',
+    'Mechanical Issues',
+    'Missing Items'
+  ];
 
   useEffect(() => {
     fetchActiveBookings();
@@ -30,9 +40,38 @@ const ReturnInspection = () => {
 
       if (response.ok) {
         const result = await response.json();
-        const data = result.data?.bookings || result.bookings || result;
-        const bookingsArray = Array.isArray(data) ? data : [];
-        setActiveBookings(bookingsArray.filter(booking => booking.status === 'active'));
+        const bookings = result.data?.bookings || [];
+        
+        // Fetch car and customer details for each booking
+        const enrichedBookings = await Promise.all(
+          bookings.map(async (booking) => {
+            try {
+              // Fetch car details
+              const carResponse = await fetch(`http://localhost:8000/api/cars/${booking.car_id}`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+              });
+              const carData = carResponse.ok ? await carResponse.json() : null;
+              
+              // Fetch customer details
+              const customerResponse = await fetch(`http://localhost:8000/api/admin/users/${booking.user_id}`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+              });
+              const customerData = customerResponse.ok ? await customerResponse.json() : null;
+              
+              console.log('Customer response:', customerResponse.status, customerData);
+              
+              return {
+                ...booking,
+                car: carData?.data || {},
+                customer: customerData?.data || {}
+              };
+            } catch (err) {
+              return booking;
+            }
+          })
+        );
+        
+        setActiveBookings(enrichedBookings);
       } else {
         setError('Failed to fetch active bookings');
         setActiveBookings([]);
@@ -46,28 +85,59 @@ const ReturnInspection = () => {
     }
   };
 
+  const calculateDamageCharge = (damageLevel, depositAmount) => {
+    if (damageLevel === 0) return 0;
+    return (damageLevel / 10) * depositAmount;
+  };
+
   const handleInspectionStart = (booking) => {
     setSelectedBooking(booking);
     setInspectionData({
       fuel_level: 'full',
-      damage_notes: '',
-      additional_charges: 0,
-      condition: 'good'
+      condition: 'good',
+      damage_level: 0,
+      damage_types: [],
+      additional_notes: '',
+      calculated_charge: 0
     });
     setShowModal(true);
   };
 
+  const handleDamageTypeChange = (type, checked) => {
+    const newTypes = checked 
+      ? [...inspectionData.damage_types, type]
+      : inspectionData.damage_types.filter(t => t !== type);
+    
+    setInspectionData({
+      ...inspectionData,
+      damage_types: newTypes
+    });
+  };
+
+  const handleDamageLevelChange = (level) => {
+    const charge = calculateDamageCharge(level, selectedBooking?.deposit_amount || 0);
+    setInspectionData({
+      ...inspectionData,
+      damage_level: level,
+      calculated_charge: charge
+    });
+  };
+
   const handleInspectionSubmit = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/bookings/${selectedBooking.id}/complete`, {
+      const response = await fetch(`http://localhost:8000/api/bookings/${selectedBooking.id}/complete-return`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify({
-          status: 'completed',
-          inspection_data: inspectionData
+          damage_level: inspectionData.damage_level || null,
+          return_notes: inspectionData.damage_types.join(','),
+          additional_notes: inspectionData.additional_notes,
+          fuel_level: inspectionData.fuel_level,
+          condition: inspectionData.condition,
+          damage_charge: inspectionData.calculated_charge
         })
       });
 
@@ -83,6 +153,71 @@ const ReturnInspection = () => {
       setError('Error completing inspection');
     }
   };
+
+  const columns = [
+    { 
+      key: 'id', 
+      header: 'Booking ID',
+      render: (value) => `#${value.slice(0, 8)}`
+    },
+    { 
+      key: 'customer', 
+      header: 'Customer',
+      render: (value) => value?.full_name || 'N/A'
+    },
+    { 
+      key: 'car', 
+      header: 'Vehicle',
+      render: (value) => value?.brand && value?.model ? `${value.brand} ${value.model} (${value.year})` : 'N/A'
+    },
+    { 
+      key: 'return_date', 
+      header: 'Return Date',
+      render: (value) => new Date(value).toLocaleDateString()
+    },
+    { 
+      key: 'return_date', 
+      header: 'Status',
+      render: (value) => {
+        const returnDate = new Date(value);
+        const today = new Date();
+        const daysOverdue = Math.max(0, Math.ceil((today - returnDate) / (1000 * 60 * 60 * 24)));
+        
+        return daysOverdue > 0 ? (
+          <span style={{
+            backgroundColor: '#ff8c00',
+            color: 'white',
+            padding: '4px 8px',
+            borderRadius: '12px',
+            fontSize: '0.8rem',
+            fontWeight: '500'
+          }}>
+            {daysOverdue} days overdue
+          </span>
+        ) : (
+          <span style={{
+            backgroundColor: '#28a745',
+            color: 'white',
+            padding: '4px 8px',
+            borderRadius: '12px',
+            fontSize: '0.8rem',
+            fontWeight: '500'
+          }}>
+            On time
+          </span>
+        );
+      }
+    }
+  ];
+
+  const actions = [
+    {
+      label: <i className="fas fa-clipboard-check" style={{ color: '#28a745' }}></i>,
+      className: 'btn-success',
+      title: 'Start Inspection',
+      onClick: handleInspectionStart
+    }
+  ];
 
   if (loading) {
     return (
@@ -101,105 +236,82 @@ const ReturnInspection = () => {
   return (
     <div style={{minHeight: '100vh', paddingTop: '120px', backgroundImage: 'url(/photos/hero2.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>
       <div className="container">
-        <div className="row">
-          <div className="col-12">
-            <div className="card" style={{backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '15px', border: '2px solid #dc3545'}}>
-              <div className="card-header" style={{backgroundColor: '#dc3545', color: 'white', borderRadius: '13px 13px 0 0'}}>
-                <h4 className="mb-0">Return Inspection</h4>
-              </div>
-              <div className="card-body">
-                {error && (
-                  <div className="alert alert-danger" role="alert">
-                    {error}
-                  </div>
-                )}
-
-                {activeBookings.length === 0 ? (
-                  <div className="text-center py-4">
-                    <h5>No Active Rentals</h5>
-                    <p className="text-muted">There are currently no active rentals requiring inspection.</p>
-                  </div>
-                ) : (
-                  <div className="table-responsive">
-                    <table className="table table-hover">
-                      <thead>
-                        <tr>
-                          <th>Booking ID</th>
-                          <th>Customer</th>
-                          <th>Car</th>
-                          <th>Return Date</th>
-                          <th>Days Overdue</th>
-                          <th>Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {activeBookings.map((booking) => {
-                          const returnDate = new Date(booking.return_date);
-                          const today = new Date();
-                          const daysOverdue = Math.max(0, Math.ceil((today - returnDate) / (1000 * 60 * 60 * 24)));
-                          
-                          return (
-                            <tr key={booking.id}>
-                              <td>
-                                <small className="text-muted">#{booking.id.slice(0, 8)}</small>
-                              </td>
-                              <td>{booking.customer_name || 'N/A'}</td>
-                              <td>
-                                <strong>{booking.car_make} {booking.car_model}</strong>
-                                <br />
-                                <small className="text-muted">{booking.car_year}</small>
-                              </td>
-                              <td>{returnDate.toLocaleDateString()}</td>
-                              <td>
-                                {daysOverdue > 0 ? (
-                                  <span className="badge bg-warning text-dark">{daysOverdue} days</span>
-                                ) : (
-                                  <span className="badge bg-success">On time</span>
-                                )}
-                              </td>
-                              <td>
-                                <button 
-                                  className="btn btn-primary btn-sm"
-                                  onClick={() => handleInspectionStart(booking)}
-                                >
-                                  Start Inspection
-                                </button>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
-            </div>
+        {error && (
+          <div className="alert alert-danger" role="alert">
+            {error}
           </div>
-        </div>
+        )}
+        
+        <DataTable 
+          title="Return Inspections"
+          data={activeBookings}
+          columns={columns}
+          actions={actions}
+        />
       </div>
 
       {/* Inspection Modal */}
       {showModal && selectedBooking && (
-        <div className="modal show d-block" style={{backgroundColor: 'rgba(0,0,0,0.5)'}}>
-          <div className="modal-dialog modal-lg">
-            <div className="modal-content" style={{borderRadius: '15px', border: '2px solid #dc3545'}}>
-              <div className="modal-header" style={{backgroundColor: '#dc3545', color: 'white', borderRadius: '13px 13px 0 0'}}>
-                <h5 className="modal-title">Return Inspection - {selectedBooking.car_make} {selectedBooking.car_model}</h5>
+        <div className="modal show d-block" style={{backgroundColor: 'rgba(0,0,0,0.8)', zIndex: 999, position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'auto', overflow: 'auto'}}>
+          <div className="modal-dialog modal-lg" style={{marginTop: '120px', marginBottom: '50px', pointerEvents: 'auto'}}>
+            <div style={{
+              backgroundColor: 'black',
+              border: '2px solid red',
+              borderRadius: '15px',
+              padding: '25px',
+              color: 'white',
+              boxShadow: '0 4px 15px rgba(255, 0, 0, 0.1)',
+              position: 'relative',
+              pointerEvents: 'auto',
+              maxHeight: 'calc(100vh - 170px)',
+              overflow: 'auto'
+            }}>
+              {/* Header */}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '20px',
+                paddingBottom: '15px',
+                borderBottom: '1px solid rgba(255, 0, 0, 0.3)'
+              }}>
+                <h5 style={{ color: 'white', margin: 0, fontSize: '1.25rem', fontWeight: '600' }}>
+                  Return Inspection - {selectedBooking.car?.brand} {selectedBooking.car?.model}
+                </h5>
                 <button 
-                  type="button" 
-                  className="btn-close btn-close-white" 
                   onClick={() => setShowModal(false)}
-                ></button>
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: 'white',
+                    fontSize: '1.5rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  ×
+                </button>
               </div>
-              <div className="modal-body">
-                <div className="row">
-                  <div className="col-md-6">
-                    <div className="mb-3">
-                      <label className="form-label">Fuel Level</label>
+
+              {/* Form Content */}
+              <div style={{ borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)', padding: '20px' }}>
+                  
+                  {/* Basic Info Row */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+                    <div>
+                      <label style={{ color: 'white', fontSize: '0.9rem', fontWeight: '600', marginBottom: '8px', display: 'block' }}>Fuel Level</label>
                       <select 
-                        className="form-select"
                         value={inspectionData.fuel_level}
                         onChange={(e) => setInspectionData({...inspectionData, fuel_level: e.target.value})}
+                        style={{
+                          width: '100%',
+                          padding: '12px',
+                          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                          border: '1px solid rgba(255, 0, 0, 0.3)',
+                          borderRadius: '8px',
+                          color: 'white',
+                          fontSize: '0.95rem'
+                        }}
                       >
                         <option value="empty">Empty</option>
                         <option value="quarter">1/4 Tank</option>
@@ -208,14 +320,20 @@ const ReturnInspection = () => {
                         <option value="full">Full Tank</option>
                       </select>
                     </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div className="mb-3">
-                      <label className="form-label">Overall Condition</label>
+                    <div>
+                      <label style={{ color: 'white', fontSize: '0.9rem', fontWeight: '600', marginBottom: '8px', display: 'block' }}>Overall Condition</label>
                       <select 
-                        className="form-select"
                         value={inspectionData.condition}
                         onChange={(e) => setInspectionData({...inspectionData, condition: e.target.value})}
+                        style={{
+                          width: '100%',
+                          padding: '12px',
+                          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                          border: '1px solid rgba(255, 0, 0, 0.3)',
+                          borderRadius: '8px',
+                          color: 'white',
+                          fontSize: '0.95rem'
+                        }}
                       >
                         <option value="excellent">Excellent</option>
                         <option value="good">Good</option>
@@ -224,50 +342,153 @@ const ReturnInspection = () => {
                       </select>
                     </div>
                   </div>
+
+                  {/* Damage Level */}
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{ color: 'white', fontSize: '0.9rem', fontWeight: '600', marginBottom: '8px', display: 'block' }}>Damage Assessment</label>
+                    <select 
+                      value={inspectionData.damage_level}
+                      onChange={(e) => handleDamageLevelChange(parseInt(e.target.value))}
+                      style={{
+                        width: '100%',
+                        padding: '12px',
+                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                        border: '1px solid rgba(255, 0, 0, 0.3)',
+                        borderRadius: '8px',
+                        color: 'white',
+                        fontSize: '0.95rem'
+                      }}
+                    >
+                      <option value={0}>No Damage</option>
+                      {[...Array(10)].map((_, i) => (
+                        <option key={i+1} value={i+1}>
+                          Level {i+1} - {(i+1) * 10}% charge
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Damage Types */}
+                  {inspectionData.damage_level > 0 && (
+                    <div style={{ marginBottom: '20px' }}>
+                      <label style={{ color: 'white', fontSize: '0.9rem', fontWeight: '600', marginBottom: '12px', display: 'block' }}>Damage Types</label>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+                        {damageTypes.map((type) => (
+                          <label key={type} style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            padding: '10px',
+                            backgroundColor: 'rgba(255, 0, 0, 0.05)',
+                            border: '1px solid rgba(255, 0, 0, 0.2)',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease'
+                          }}>
+                            <input 
+                              type="checkbox"
+                              checked={inspectionData.damage_types.includes(type)}
+                              onChange={(e) => handleDamageTypeChange(type, e.target.checked)}
+                              style={{ marginRight: '8px', accentColor: '#dc3545' }}
+                            />
+                            <span style={{ color: 'white', fontSize: '0.9rem' }}>{type}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Additional Notes */}
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{ color: 'white', fontSize: '0.9rem', fontWeight: '600', marginBottom: '8px', display: 'block' }}>Additional Notes</label>
+                    <textarea 
+                      rows="3"
+                      placeholder="Document specific damage details, location, severity..."
+                      value={inspectionData.additional_notes}
+                      onChange={(e) => setInspectionData({...inspectionData, additional_notes: e.target.value})}
+                      style={{
+                        width: '100%',
+                        padding: '12px',
+                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                        border: '1px solid rgba(255, 0, 0, 0.3)',
+                        borderRadius: '8px',
+                        color: 'white',
+                        fontSize: '0.95rem',
+                        resize: 'vertical'
+                      }}
+                    ></textarea>
+                  </div>
+
+                  {/* Damage Charge Display */}
+                  {inspectionData.damage_level > 0 && (
+                    <div style={{
+                      backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                      border: '1px solid rgba(255, 193, 7, 0.3)',
+                      borderRadius: '8px',
+                      padding: '15px',
+                      marginBottom: '20px'
+                    }}>
+                      <div style={{ color: '#ffc107', fontWeight: 'bold', fontSize: '1.1rem' }}>
+                        Calculated Damage Charge: £{inspectionData.calculated_charge.toFixed(2)}
+                      </div>
+                      <div style={{ color: '#ccc', fontSize: '0.9rem', marginTop: '5px' }}>
+                        Based on {inspectionData.damage_level * 10}% of security deposit (£{selectedBooking.deposit_amount})
+                      </div>
+                      <div style={{ color: '#ccc', fontSize: '0.85rem', marginTop: '3px' }}>
+                        Remaining deposit: £{(selectedBooking.deposit_amount - inspectionData.calculated_charge).toFixed(2)}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Action Buttons */}
+                  <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                    <button
+                      onClick={() => setShowModal(false)}
+                      style={{
+                        padding: '12px 24px',
+                        backgroundColor: 'transparent',
+                        border: '2px solid #6c757d',
+                        borderRadius: '8px',
+                        color: '#6c757d',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.target.style.backgroundColor = '#6c757d';
+                        e.target.style.color = 'white';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.backgroundColor = 'transparent';
+                        e.target.style.color = '#6c757d';
+                      }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleInspectionSubmit}
+                      style={{
+                        padding: '12px 24px',
+                        backgroundColor: '#28a745',
+                        border: '2px solid #28a745',
+                        borderRadius: '8px',
+                        color: 'white',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.target.style.backgroundColor = '#218838';
+                        e.target.style.borderColor = '#218838';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.backgroundColor = '#28a745';
+                        e.target.style.borderColor = '#28a745';
+                      }}
+                    >
+                      Complete Return
+                    </button>
+                  </div>
                 </div>
-                
-                <div className="mb-3">
-                  <label className="form-label">Damage Notes</label>
-                  <textarea 
-                    className="form-control"
-                    rows="4"
-                    placeholder="Document any damage, scratches, or issues found..."
-                    value={inspectionData.damage_notes}
-                    onChange={(e) => setInspectionData({...inspectionData, damage_notes: e.target.value})}
-                  ></textarea>
-                </div>
-                
-                <div className="mb-3">
-                  <label className="form-label">Additional Charges ($)</label>
-                  <input 
-                    type="number"
-                    className="form-control"
-                    min="0"
-                    step="0.01"
-                    placeholder="0.00"
-                    value={inspectionData.additional_charges}
-                    onChange={(e) => setInspectionData({...inspectionData, additional_charges: parseFloat(e.target.value) || 0})}
-                  />
-                  <small className="form-text text-muted">
-                    Include charges for damage, cleaning, fuel, or late return fees
-                  </small>
-                </div>
-              </div>
-              <div className="modal-footer">
-                <button 
-                  type="button" 
-                  className="btn btn-secondary"
-                  onClick={() => setShowModal(false)}
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="button" 
-                  className="btn btn-success"
-                  onClick={handleInspectionSubmit}
-                >
-                  Complete Return
-                </button>
               </div>
             </div>
           </div>

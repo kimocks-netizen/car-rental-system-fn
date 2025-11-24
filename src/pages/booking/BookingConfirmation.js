@@ -159,7 +159,23 @@ const BookingConfirmation = () => {
                   </div>
                 </div>
                 <div className="col-md-6 mb-3">
-                  <label style={{ color: '#ccc', fontSize: '0.9rem' }}>Total Cost</label>
+                  <label style={{ color: '#ccc', fontSize: '0.9rem' }}>Rental Amount</label>
+                  <div style={{ color: 'white', fontSize: '1.1rem', fontWeight: 'bold' }}>
+                    £{booking?.rental_amount}
+                  </div>
+                </div>
+              </div>
+
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label style={{ color: '#ccc', fontSize: '0.9rem' }}>Security Deposit</label>
+                  <div style={{ color: '#ffc107', fontSize: '1.1rem', fontWeight: 'bold' }}>
+                    £{booking?.deposit_amount}
+                  </div>
+                  <small style={{ color: '#ccc', display: 'block' }}>Refundable if no damage</small>
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label style={{ color: '#ccc', fontSize: '0.9rem' }}>Total Amount</label>
                   <div style={{ color: '#dc3545', fontSize: '1.3rem', fontWeight: 'bold' }}>
                     £{booking?.total_amount}
                   </div>

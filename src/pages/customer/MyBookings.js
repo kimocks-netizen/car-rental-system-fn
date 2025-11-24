@@ -11,6 +11,8 @@ const MyBookings = () => {
   const [cancelling, setCancelling] = useState(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [bookingToCancel, setBookingToCancel] = useState(null);
+  const [showNotesModal, setShowNotesModal] = useState(false);
+  const [selectedBookingNotes, setSelectedBookingNotes] = useState(null);
 
   useEffect(() => {
     setShowContent(true);
@@ -52,6 +54,16 @@ const MyBookings = () => {
   const handleCancelClick = (booking) => {
     setBookingToCancel(booking);
     setShowCancelModal(true);
+  };
+
+  const handleViewNotes = (booking) => {
+    setSelectedBookingNotes(booking);
+    setShowNotesModal(true);
+  };
+
+  const calculateDamageCharge = (damageLevel, depositAmount) => {
+    if (!damageLevel) return 0;
+    return (damageLevel / 10) * depositAmount;
   };
 
   const handleCancelConfirm = async () => {
@@ -300,22 +312,41 @@ const MyBookings = () => {
 
                     {/* Actions */}
                     <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
-                      <button
-                        onClick={() => navigate(`/booking-confirmation/${booking.id}`)}
-                        style={{
-                          backgroundColor: 'transparent',
-                          border: '2px solid #dc3545',
-                          color: '#dc3545',
-                          padding: '8px 15px',
-                          borderRadius: '20px',
-                          fontSize: '0.9rem',
-                          cursor: 'pointer',
-                          flex: 1
-                        }}
-                      >
-                        <i className="fas fa-eye" style={{ marginRight: '5px' }}></i>
-                        View Details
-                      </button>
+                      {booking.status === 'completed' ? (
+                        <button
+                          onClick={() => handleViewNotes(booking)}
+                          style={{
+                            backgroundColor: 'transparent',
+                            border: '2px solid #dc3545',
+                            color: '#dc3545',
+                            padding: '8px 15px',
+                            borderRadius: '20px',
+                            fontSize: '0.9rem',
+                            cursor: 'pointer',
+                            flex: 1
+                          }}
+                        >
+                          <i className="fas fa-clipboard-list" style={{ marginRight: '5px' }}></i>
+                          View Notes
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => navigate(`/booking-confirmation/${booking.id}`)}
+                          style={{
+                            backgroundColor: 'transparent',
+                            border: '2px solid #dc3545',
+                            color: '#dc3545',
+                            padding: '8px 15px',
+                            borderRadius: '20px',
+                            fontSize: '0.9rem',
+                            cursor: 'pointer',
+                            flex: 1
+                          }}
+                        >
+                          <i className="fas fa-eye" style={{ marginRight: '5px' }}></i>
+                          View Details
+                        </button>
+                      )}
                       
                       {booking.status === 'pending' && (
                         <button
@@ -367,6 +398,197 @@ const MyBookings = () => {
           loading={cancelling === bookingToCancel?.id}
           type="danger"
         />
+
+        {/* Inspection Notes Modal */}
+        {showNotesModal && selectedBookingNotes && (
+          <div className="modal show d-block" style={{backgroundColor: 'rgba(0,0,0,0.8)', zIndex: 999, position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'auto', overflow: 'auto'}}>
+            <div className="modal-dialog modal-lg" style={{marginTop: '10px', marginBottom: '50px', pointerEvents: 'auto'}}>
+              <div style={{
+                backgroundColor: 'black',
+                border: '2px solid red',
+                borderRadius: '15px',
+                padding: '25px',
+                color: 'white',
+                boxShadow: '0 4px 15px rgba(255, 0, 0, 0.1)',
+                position: 'relative',
+                pointerEvents: 'auto',
+                maxHeight: 'calc(100vh - 170px)',
+                overflow: 'auto'
+              }}>
+                {/* Header */}
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '20px',
+                  paddingBottom: '15px',
+                  borderBottom: '1px solid rgba(255, 0, 0, 0.3)'
+                }}>
+                  <h5 style={{ color: 'white', margin: 0, fontSize: '1.25rem', fontWeight: '600' }}>
+                    Return Inspection Report
+                  </h5>
+                  <button 
+                    onClick={() => setShowNotesModal(false)}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: 'white',
+                      fontSize: '1.5rem',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
+
+                {/* Content */}
+                <div style={{ borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                  <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)', padding: '20px' }}>
+                    
+                    {/* Vehicle Info */}
+                    <div style={{ marginBottom: '20px' }}>
+                      <h6 style={{ color: '#dc3545', fontSize: '1rem', fontWeight: '600', marginBottom: '10px' }}>Vehicle Information</h6>
+                      <div style={{ color: 'white', fontSize: '1.1rem' }}>
+                        {selectedBookingNotes.car?.brand} {selectedBookingNotes.car?.model} ({selectedBookingNotes.car?.year})
+                      </div>
+                      <div style={{ color: '#ccc', fontSize: '0.9rem' }}>
+                        Booking #{selectedBookingNotes.id.slice(0, 8)} • Completed on {new Date(selectedBookingNotes.updated_at).toLocaleDateString()}
+                      </div>
+                    </div>
+
+                    {/* Damage Assessment */}
+                    {selectedBookingNotes.damage_level > 0 ? (
+                      <>
+                        <div style={{ marginBottom: '20px' }}>
+                          <h6 style={{ color: '#dc3545', fontSize: '1rem', fontWeight: '600', marginBottom: '10px' }}>Damage Assessment</h6>
+                          <div style={{
+                            backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                            border: '1px solid rgba(255, 193, 7, 0.3)',
+                            borderRadius: '8px',
+                            padding: '15px'
+                          }}>
+                            <div style={{ color: '#ffc107', fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '5px' }}>
+                              Damage Level: {selectedBookingNotes.damage_level}/10
+                            </div>
+                            <div style={{ color: '#ffc107', fontWeight: 'bold', fontSize: '1.2rem', marginBottom: '5px' }}>
+                              Damage Charge: £{calculateDamageCharge(selectedBookingNotes.damage_level, selectedBookingNotes.deposit_amount).toFixed(2)}
+                            </div>
+                            <div style={{ color: '#ccc', fontSize: '0.9rem' }}>
+                              {selectedBookingNotes.damage_level * 10}% of security deposit (£{selectedBookingNotes.deposit_amount})
+                            </div>
+                          </div>
+                        </div>
+
+                        {selectedBookingNotes.return_notes && (
+                          <div style={{ marginBottom: '20px' }}>
+                            <h6 style={{ color: '#dc3545', fontSize: '1rem', fontWeight: '600', marginBottom: '10px' }}>Damage Types</h6>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                              {selectedBookingNotes.return_notes.split(',').map((damage, index) => (
+                                <span key={index} style={{
+                                  backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                                  border: '1px solid rgba(220, 53, 69, 0.3)',
+                                  borderRadius: '15px',
+                                  padding: '5px 12px',
+                                  fontSize: '0.85rem',
+                                  color: '#dc3545'
+                                }}>
+                                  {damage.trim()}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div style={{ marginBottom: '20px' }}>
+                        <h6 style={{ color: '#28a745', fontSize: '1rem', fontWeight: '600', marginBottom: '10px' }}>Vehicle Condition</h6>
+                        <div style={{
+                          backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                          border: '1px solid rgba(40, 167, 69, 0.3)',
+                          borderRadius: '8px',
+                          padding: '15px',
+                          color: '#28a745',
+                          fontWeight: 'bold'
+                        }}>
+                          No damage reported - Vehicle returned in excellent condition
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Additional Notes */}
+                    {selectedBookingNotes.pickup_notes && selectedBookingNotes.pickup_notes !== 'none' && (
+                      <div style={{ marginBottom: '20px' }}>
+                        <h6 style={{ color: '#dc3545', fontSize: '1rem', fontWeight: '600', marginBottom: '10px' }}>Additional Notes</h6>
+                        <div style={{
+                          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                          border: '1px solid rgba(255, 255, 255, 0.1)',
+                          borderRadius: '8px',
+                          padding: '15px',
+                          color: 'white'
+                        }}>
+                          {selectedBookingNotes.pickup_notes}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Financial Summary */}
+                    <div style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      borderRadius: '8px',
+                      padding: '15px'
+                    }}>
+                      <h6 style={{ color: '#dc3545', fontSize: '1rem', fontWeight: '600', marginBottom: '15px' }}>Financial Summary</h6>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                        <span style={{ color: '#ccc' }}>Rental Amount:</span>
+                        <span style={{ color: 'white', fontWeight: 'bold' }}>£{selectedBookingNotes.rental_amount}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                        <span style={{ color: '#ccc' }}>Security Deposit:</span>
+                        <span style={{ color: 'white', fontWeight: 'bold' }}>£{selectedBookingNotes.deposit_amount}</span>
+                      </div>
+                      {selectedBookingNotes.damage_level > 0 && (
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                          <span style={{ color: '#ffc107' }}>Damage Charge:</span>
+                          <span style={{ color: '#ffc107', fontWeight: 'bold' }}>-£{calculateDamageCharge(selectedBookingNotes.damage_level, selectedBookingNotes.deposit_amount).toFixed(2)}</span>
+                        </div>
+                      )}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                        <span style={{ color: '#28a745' }}>Deposit Refund:</span>
+                        <span style={{ color: '#28a745', fontWeight: 'bold' }}>+£{selectedBookingNotes.damage_level > 0 ? (selectedBookingNotes.deposit_amount - calculateDamageCharge(selectedBookingNotes.damage_level, selectedBookingNotes.deposit_amount)).toFixed(2) : selectedBookingNotes.deposit_amount}</span>
+                      </div>
+                      <hr style={{ borderColor: 'rgba(255, 255, 255, 0.1)', margin: '10px 0' }} />
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: 'white', fontWeight: 'bold' }}>Net Amount Paid:</span>
+                        <span style={{ color: '#dc3545', fontWeight: 'bold', fontSize: '1.1rem' }}>
+                          £{selectedBookingNotes.damage_level > 0 ? (selectedBookingNotes.rental_amount + calculateDamageCharge(selectedBookingNotes.damage_level, selectedBookingNotes.deposit_amount)).toFixed(2) : selectedBookingNotes.rental_amount}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Close Button */}
+                    <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                      <button
+                        onClick={() => setShowNotesModal(false)}
+                        style={{
+                          padding: '12px 30px',
+                          backgroundColor: '#dc3545',
+                          border: '2px solid #dc3545',
+                          borderRadius: '8px',
+                          color: 'white',
+                          fontWeight: '600',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Close
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
