@@ -31,8 +31,8 @@ const Home = () => {
                       including sedans, SUVs, luxury cars, and commercial vehicles. Available 
                       24/7 for pickup and delivery. GPS tracking and full insurance coverage.
                     </p>
-                    <a href="./pricing" className="border-btn hero-btn2 red-hover slide-in-left" data-delay="0.8s">
-                      VIEW PLANS
+                    <a href="/cars" className="border-btn hero-btn2 red-hover slide-in-left" data-delay="0.8s">
+                      EXPLORE OUR FLEET
                     </a>
                   </div>
                 </div>
