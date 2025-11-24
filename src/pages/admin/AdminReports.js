@@ -150,7 +150,7 @@ const AdminReports = () => {
                 <div style={{ textAlign: 'left' }}>
                   <h5 style={{ color: 'white', marginBottom: '15px' }}>Monthly Revenue</h5>
                   <h3 style={{ color: 'white', margin: 0 }}>£{reports.monthlyRevenue}</h3>
-                  <p style={{ color: '#ccc', margin: 0, fontSize: '0.9rem' }}>Confirmed + Active + Cancellation fees + Damage charges</p>
+                  <p style={{ color: '#ccc', margin: 0, fontSize: '0.9rem' }}>Confirmed + Active + Completed + Cancellation fees + Damage charges</p>
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <h5 style={{ color: 'white', marginBottom: '15px' }}>Incoming Revenue</h5>

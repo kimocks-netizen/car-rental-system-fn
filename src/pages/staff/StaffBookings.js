@@ -163,6 +163,16 @@ const StaffBookings = () => {
       key: 'return_date', 
       header: 'Return Date',
       render: (value) => new Date(value).toLocaleDateString()
+    },
+    { 
+      key: 'pickup_location', 
+      header: 'Pickup Location',
+      render: (value) => value || 'Not specified'
+    },
+    { 
+      key: 'dropoff_location', 
+      header: 'Return Location',
+      render: (value) => value || 'Not specified'
     }
   ];
 

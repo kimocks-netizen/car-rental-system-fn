@@ -46,7 +46,7 @@ const MyBookings = () => {
       case 'confirmed': return '#28a745';
       case 'active': return '#007bff';
       case 'completed': return '#6c757d';
-      case 'cancelled': return '#dc3545';
+      case 'cancelled': return '#c82333';
       default: return '#ffc107';
     }
   };
@@ -302,10 +302,16 @@ const MyBookings = () => {
                     </div>
 
                     <div className="row mb-3">
-                      <div className="col-12">
+                      <div className="col-6">
                         <label style={{ color: '#ccc', fontSize: '0.8rem' }}>Pickup Location</label>
                         <div style={{ color: 'white' }}>
                           {booking.pickup_location || 'Not specified'}
+                        </div>
+                      </div>
+                      <div className="col-6">
+                        <label style={{ color: '#ccc', fontSize: '0.8rem' }}>Return Location</label>
+                        <div style={{ color: 'white' }}>
+                          {booking.dropoff_location || 'Not specified'}
                         </div>
                       </div>
                     </div>

@@ -77,11 +77,7 @@ const CarPreview = () => {
       </div>
     );
   }
-/*
-during booking we are adding Pickup Location and return Location, 
-what if we add this information in the bookin gconfirmation form, 
-but you need to check in database or backend i think we are not storing them and update
-*/
+
   return (
     <div style={{
       minHeight: '100vh',
