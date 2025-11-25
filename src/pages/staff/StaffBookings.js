@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import DataTable from '../../components/DataTable';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
+import { API_BASE_URL } from '../../utils/api';
 
 const StaffBookings = () => {
   const { user } = useAuth();
@@ -20,10 +21,10 @@ const StaffBookings = () => {
   const fetchBookings = async () => {
     try {
       const [bookingsResponse, carsResponse] = await Promise.all([
-        fetch('http://localhost:8000/api/bookings', {
+        fetch(`${API_BASE_URL}/bookings`, {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         }),
-        fetch('http://localhost:8000/api/cars', {
+        fetch(`${API_BASE_URL}/cars`, {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         })
       ]);
@@ -68,7 +69,7 @@ const StaffBookings = () => {
     console.log('Selected booking:', selectedBooking);
     
     try {
-      const url = `http://localhost:8000/api/bookings/${selectedBooking.id}/status`;
+      const url = `${API_BASE_URL}/bookings/${selectedBooking.id}/status`;
       const payload = { status: selectedBooking.newStatus };
       
       console.log('📡 Making API call to:', url);

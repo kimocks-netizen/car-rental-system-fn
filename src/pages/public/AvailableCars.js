@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CarCard from '../../components/cars/CarCard';
 import CarPreview from '../../components/cars/CarPreview';
+import { API_BASE_URL } from '../../utils/api';
 
 const AvailableCars = () => {
   const [cars, setCars] = useState([]);
@@ -19,7 +20,7 @@ const AvailableCars = () => {
   const fetchAvailableCars = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8000/api/cars/available');
+      const response = await fetch(`${API_BASE_URL}/cars/available`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch cars');
@@ -107,10 +108,11 @@ const AvailableCars = () => {
     <div style={{
       minHeight: '100vh',
       paddingTop: '120px',
+      paddingBottom: '50px',
       backgroundImage: 'url(/photos/hero2.png)',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
-      backgroundAttachment: 'fixed'
+      backgroundAttachment: window.innerWidth > 768 ? 'fixed' : 'scroll'
     }}>
       <div className="container" style={{
         transform: showContent ? 'translateX(0)' : 'translateX(100%)',

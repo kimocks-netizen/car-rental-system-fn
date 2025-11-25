@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import BookingForm from '../../components/booking/BookingForm';
 import PaymentForm from '../../components/booking/PaymentForm';
 import CarPreview from '../../components/cars/CarPreview';
+import { API_BASE_URL } from '../../utils/api';
 
 const BookingPage = () => {
   const { carId } = useParams();
@@ -21,7 +22,7 @@ const BookingPage = () => {
   const fetchCarDetails = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:8000/api/cars/${carId}`);
+      const response = await fetch(`${API_BASE_URL}/cars/${carId}`);
       
       if (!response.ok) {
         throw new Error('Car not found');
@@ -66,7 +67,7 @@ const BookingPage = () => {
       console.log('Booking payload:', bookingPayload);
       console.log('Rental amount type:', typeof bookingPayload.rental_amount);
 
-      const response = await fetch('http://localhost:8000/api/bookings', {
+      const response = await fetch(`${API_BASE_URL}/bookings`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -145,10 +146,11 @@ const BookingPage = () => {
     <div style={{
       minHeight: '100vh',
       paddingTop: '120px',
+      paddingBottom: '100px',
       backgroundImage: 'url(/photos/hero2.png)',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
-      backgroundAttachment: 'fixed'
+      backgroundAttachment: window.innerWidth > 768 ? 'fixed' : 'scroll'
     }}>
       <div className="container">
         {/* Progress Steps */}

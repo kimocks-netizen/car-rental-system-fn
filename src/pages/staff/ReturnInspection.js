@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import DataTable from '../../components/DataTable';
+import { API_BASE_URL } from '../../utils/api';
 
 const ReturnInspection = () => {
   const { user } = useAuth();
@@ -32,7 +33,7 @@ const ReturnInspection = () => {
 
   const fetchActiveBookings = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/bookings?status=active', {
+      const response = await fetch(`${API_BASE_URL}/bookings?status=active`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -47,13 +48,13 @@ const ReturnInspection = () => {
           bookings.map(async (booking) => {
             try {
               // Fetch car details
-              const carResponse = await fetch(`http://localhost:8000/api/cars/${booking.car_id}`, {
+              const carResponse = await fetch(`${API_BASE_URL}/cars/${booking.car_id}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
               });
               const carData = carResponse.ok ? await carResponse.json() : null;
               
               // Fetch customer details
-              const customerResponse = await fetch(`http://localhost:8000/api/admin/users/${booking.user_id}`, {
+              const customerResponse = await fetch(`${API_BASE_URL}/admin/users/${booking.user_id}`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
               });
               const customerData = customerResponse.ok ? await customerResponse.json() : null;
@@ -125,7 +126,7 @@ const ReturnInspection = () => {
 
   const handleInspectionSubmit = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/bookings/${selectedBooking.id}/complete-return`, {
+      const response = await fetch(`${API_BASE_URL}/bookings/${selectedBooking.id}/complete-return`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

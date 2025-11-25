@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { API_BASE_URL } from '../utils/api';
 
 const Header = () => {
   const { user, logout, isAuthenticated } = useAuth();
@@ -41,7 +42,7 @@ const Header = () => {
   const fetchBalance = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8000/api/customer/balance', {
+      const response = await fetch(`${API_BASE_URL}/customer/balance`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

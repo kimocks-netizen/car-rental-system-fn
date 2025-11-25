@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import CarsTable from '../../components/cars/CarsTable';
 import CarPreview from '../../components/cars/CarPreview';
+import { API_BASE_URL } from '../../utils/api';
 
 const StaffCars = () => {
   const { user } = useAuth();
@@ -19,10 +20,10 @@ const StaffCars = () => {
   const fetchCars = async () => {
     try {
       const [carsResponse, bookingsResponse] = await Promise.all([
-        fetch('http://localhost:8000/api/cars', {
+        fetch(`${API_BASE_URL}/cars`, {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         }),
-        fetch('http://localhost:8000/api/bookings', {
+        fetch(`${API_BASE_URL}/bookings`, {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         })
       ]);

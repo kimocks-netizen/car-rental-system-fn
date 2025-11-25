@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { uploadCarImage } from '../../services/supabase';
 import CarPreview from '../../components/cars/CarPreview';
 import CarsTable from '../../components/cars/CarsTable';
+import { API_BASE_URL } from '../../utils/api';
 
 const AdminCars = () => {
   const [cars, setCars] = useState([]);
@@ -21,7 +22,7 @@ const AdminCars = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8000/api/cars', {
+      const response = await fetch(`${API_BASE_URL}/cars`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -89,7 +90,7 @@ const AdminCars = () => {
       
       console.log('Creating car with data:', finalCarData);
       
-      const carResponse = await fetch('http://localhost:8000/api/cars', {
+      const carResponse = await fetch(`${API_BASE_URL}/cars`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

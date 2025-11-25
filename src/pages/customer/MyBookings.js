@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
+import { API_BASE_URL } from '../../utils/api';
 
 const MyBookings = () => {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ const MyBookings = () => {
   const fetchMyBookings = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8000/api/bookings/my-bookings', {
+      const response = await fetch(`${API_BASE_URL}/bookings/my-bookings`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -71,7 +72,7 @@ const MyBookings = () => {
       setCancelling(bookingToCancel.id);
       
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8000/api/bookings/${bookingToCancel.id}/cancel`, {
+      const response = await fetch(`${API_BASE_URL}/bookings/${bookingToCancel.id}/cancel`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -164,10 +165,11 @@ const MyBookings = () => {
     <div style={{
       minHeight: '100vh',
       paddingTop: '120px',
+      paddingBottom: '50px',
       backgroundImage: 'url(/photos/hero2.png)',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
-      backgroundAttachment: 'fixed'
+      backgroundAttachment: window.innerWidth > 768 ? 'fixed' : 'scroll'
     }}>
       <div className="container" style={{
         transform: showContent ? 'translateX(0)' : 'translateX(100%)',

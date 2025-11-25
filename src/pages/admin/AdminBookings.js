@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DataTable from '../../components/DataTable';
+import { API_BASE_URL } from '../../utils/api';
 
 const AdminBookings = () => {
   const [bookings, setBookings] = useState([]);
@@ -21,13 +22,13 @@ const AdminBookings = () => {
       
       // Fetch bookings and cars in parallel
       const [bookingsResponse, carsResponse] = await Promise.all([
-        fetch('http://localhost:8000/api/bookings', {
+        fetch(`${API_BASE_URL}/bookings`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         }),
-        fetch('http://localhost:8000/api/cars', {
+        fetch(`${API_BASE_URL}/cars`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'

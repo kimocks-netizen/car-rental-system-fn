@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { API_BASE_URL } from '../../utils/api';
 
 const CarPreview = () => {
   const { id } = useParams();
@@ -16,7 +17,7 @@ const CarPreview = () => {
   const fetchCar = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:8000/api/cars/${id}`);
+      const response = await fetch(`${API_BASE_URL}/cars/${id}`);
       
       if (!response.ok) {
         throw new Error('Car not found');

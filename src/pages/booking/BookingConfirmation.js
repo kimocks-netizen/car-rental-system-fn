@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../../utils/api';
 
 const BookingConfirmation = () => {
   const { bookingId } = useParams();
@@ -16,7 +17,7 @@ const BookingConfirmation = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8000/api/bookings/${bookingId}`, {
+      const response = await fetch(`${API_BASE_URL}/bookings/${bookingId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -84,10 +85,11 @@ const BookingConfirmation = () => {
     <div style={{
       minHeight: '100vh',
       paddingTop: '120px',
+      paddingBottom: '100px',
       backgroundImage: 'url(/photos/hero2.png)',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
-      backgroundAttachment: 'fixed'
+      backgroundAttachment: window.innerWidth > 768 ? 'fixed' : 'scroll'
     }}>
       <div className="container">
         <div className="row justify-content-center">
@@ -228,7 +230,7 @@ const BookingConfirmation = () => {
                 </ul>
               </div>
 
-              <div className="d-flex gap-3 mt-4">
+              <div className="d-flex flex-column flex-md-row gap-3 mt-4">
                 <button
                   onClick={() => navigate('/customer/dashboard')}
                   style={{
