@@ -12,7 +12,7 @@ const AdminBookings = () => {
           <div className="col-12">
             <h2 className="text-white mb-4">Booking Management</h2>
             <EnhancedBookingsTable 
-              apiEndpoint="/api/bookings"
+              apiEndpoint="/bookings"
             />
           </div>
         </div>

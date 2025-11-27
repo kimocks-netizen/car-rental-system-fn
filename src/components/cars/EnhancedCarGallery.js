@@ -3,7 +3,7 @@ import useTableData from '../../hooks/useTableData';
 import EnhancedDataTable from '../common/EnhancedDataTable';
 import CarCard from './CarCard';
 
-const EnhancedCarGallery = ({ apiEndpoint = '/api/cars/available' }) => {
+const EnhancedCarGallery = ({ apiEndpoint = '/cars/available' }) => {
   // Fetch function for cars
   const fetchCars = async (params) => {
     const queryParams = new URLSearchParams();
@@ -17,7 +17,7 @@ const EnhancedCarGallery = ({ apiEndpoint = '/api/cars/available' }) => {
     if (params.min_rate) queryParams.append('min_rate', params.min_rate);
     if (params.max_rate) queryParams.append('max_rate', params.max_rate);
     
-    const response = await fetch(`${process.env.REACT_APP_CAR_RENTAL_API_URL || 'http://localhost:8000'}${apiEndpoint}?${queryParams}`);
+    const response = await fetch(`${process.env.REACT_APP_CAR_RENTAL_API_URL}${apiEndpoint}?${queryParams}`);
     const result = await response.json();
     
     if (result.success) {

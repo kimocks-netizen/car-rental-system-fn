@@ -1,2 +1,3 @@
 // export const API_BASE_URL = process.env.REACT_APP_CAR_RENTAL_API_URL || 'https://backend-car-rental-system.up.railway.app/api';
-export const API_BASE_URL = process.env.REACT_APP_CAR_RENTAL_API_URL || 'http://localhost:8000/api';
+export const API_BASE_URL = process.env.REACT_APP_CAR_RENTAL_API_URL;
+// || 'http://localhost:8000/api';

@@ -89,7 +89,7 @@ const AdminReports = () => {
             <div style={{ marginBottom: '30px' }}>
               <h4 className="text-white mb-3">Recent Bookings</h4>
               <EnhancedBookingsTable 
-                apiEndpoint="/api/bookings"
+                apiEndpoint="/bookings"
               />
             </div>
             

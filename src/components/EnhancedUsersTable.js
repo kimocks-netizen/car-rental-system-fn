@@ -3,10 +3,10 @@ import useFrontendTableData from '../hooks/useFrontendTableData';
 import EnhancedDataTable from './common/EnhancedDataTable';
 import Badge from './common/Badge';
 
-const EnhancedUsersTable = ({ apiEndpoint = '/api/admin/users' }) => {
+const EnhancedUsersTable = ({ apiEndpoint = '/admin/users' }) => {
   // Fetch function for users (fetch all data once)
   const fetchUsers = async () => {
-    const response = await fetch(`${process.env.REACT_APP_CAR_RENTAL_API_URL || 'http://localhost:8000'}${apiEndpoint}?limit=1000`, {
+    const response = await fetch(`${process.env.REACT_APP_CAR_RENTAL_API_URL}${apiEndpoint}?limit=1000`, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`,
         'Content-Type': 'application/json'

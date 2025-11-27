@@ -10,7 +10,7 @@ const AdminUsers = () => {
           <div className="col-12">
             <h2 className="text-white mb-4">User Management</h2>
             <EnhancedUsersTable 
-              apiEndpoint="/api/admin/users"
+              apiEndpoint="/admin/users"
             />
           </div>
         </div>

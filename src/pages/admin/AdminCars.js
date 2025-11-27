@@ -89,7 +89,7 @@ const AdminCars = () => {
             </div>
             
             <EnhancedCarsTable 
-              apiEndpoint="/api/cars"
+              apiEndpoint="/cars"
               onPreview={handlePreviewCar}
             />
           </div>

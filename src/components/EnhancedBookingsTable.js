@@ -3,23 +3,23 @@ import useFrontendTableData from '../hooks/useFrontendTableData';
 import EnhancedDataTable from './common/EnhancedDataTable';
 import Badge from './common/Badge';
 
-const EnhancedBookingsTable = ({ apiEndpoint = '/api/admin/bookings' }) => {
+const EnhancedBookingsTable = ({ apiEndpoint = '/admin/bookings' }) => {
   // Fetch function for bookings with customer and car data
   const fetchBookings = async () => {
     const [bookingsResponse, carsResponse, usersResponse] = await Promise.all([
-      fetch(`${process.env.REACT_APP_CAR_RENTAL_API_URL || 'http://localhost:8000'}${apiEndpoint}?limit=1000`, {
+      fetch(`${process.env.REACT_APP_CAR_RENTAL_API_URL}${apiEndpoint}?limit=1000`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json'
         }
       }),
-      fetch(`${process.env.REACT_APP_CAR_RENTAL_API_URL || 'http://localhost:8000'}/api/cars?limit=1000`, {
+      fetch(`${process.env.REACT_APP_CAR_RENTAL_API_URL}/cars?limit=1000`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json'
         }
       }),
-      fetch(`${process.env.REACT_APP_CAR_RENTAL_API_URL || 'http://localhost:8000'}/api/admin/users?limit=1000`, {
+      fetch(`${process.env.REACT_APP_CAR_RENTAL_API_URL}/admin/users?limit=1000`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json'
