@@ -1,46 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { uploadCarImage } from '../../services/supabase';
 import CarPreview from '../../components/cars/CarPreview';
-import CarsTable from '../../components/cars/CarsTable';
+import EnhancedCarsTable from '../../components/EnhancedCarsTable';
 import { API_BASE_URL } from '../../utils/api';
 
 const AdminCars = () => {
-  const [cars, setCars] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [previewCar, setPreviewCar] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
   const [previewLoading, setPreviewLoading] = useState(false);
-
-  useEffect(() => {
-    fetchCars();
-  }, []);
-
-  const fetchCars = async () => {
-    try {
-      setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/cars`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch cars');
-      }
-      
-      const result = await response.json();
-      setCars(result.data.cars || result.data || []);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handlePreviewCar = async (car) => {
     setShowPreview(true);
@@ -65,30 +34,15 @@ const AdminCars = () => {
       setUploading(true);
       const token = localStorage.getItem('token');
       
-      // Extract image file and car data
       const { imageFile, ...carData } = formData;
       
-      // Upload image to Supabase first if provided
       let imageUrl = null;
       if (imageFile) {
-        try {
-          // Generate a temporary ID for the upload
-          const tempId = Date.now().toString();
-          imageUrl = await uploadCarImage(imageFile, tempId);
-          console.log('Image uploaded successfully:', imageUrl);
-        } catch (uploadError) {
-          console.error('Image upload failed:', uploadError);
-          throw new Error('Failed to upload image: ' + uploadError.message);
-        }
+        const tempId = Date.now().toString();
+        imageUrl = await uploadCarImage(imageFile, tempId);
       }
       
-      // Add image URL to car data
-      const finalCarData = {
-        ...carData,
-        image_url: imageUrl
-      };
-      
-      console.log('Creating car with data:', finalCarData);
+      const finalCarData = { ...carData, image_url: imageUrl };
       
       const carResponse = await fetch(`${API_BASE_URL}/cars`, {
         method: 'POST',
@@ -104,14 +58,11 @@ const AdminCars = () => {
         throw new Error(errorData.message || 'Failed to create car');
       }
       
-      const result = await carResponse.json();
-      console.log('Car created successfully:', result);
-      
       setShowAddModal(false);
-      fetchCars();
+      window.location.reload(); // Refresh to show new car
     } catch (err) {
       console.error('Add car error:', err);
-      setError(err.message);
+      alert('Error: ' + err.message);
     } finally {
       setUploading(false);
     }
@@ -119,31 +70,7 @@ const AdminCars = () => {
 
 
 
-  if (loading) {
-    return (
-      <div style={{minHeight: '100vh', paddingTop: '120px', backgroundImage: 'url(/photos/hero2.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>
-        <div className="container">
-          <div className="text-center text-white">
-            <h3>Loading cars...</h3>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
-  if (error) {
-    return (
-      <div style={{minHeight: '100vh', paddingTop: '120px', backgroundImage: 'url(/photos/hero2.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>
-        <div className="container">
-          <div className="alert alert-danger">
-            <h5>Error loading cars</h5>
-            <p>{error}</p>
-            <button className="btn btn-primary" onClick={fetchCars}>Retry</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div style={{minHeight: '100vh', paddingTop: '120px', backgroundImage: 'url(/photos/hero2.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>
@@ -161,12 +88,9 @@ const AdminCars = () => {
               </button>
             </div>
             
-            <CarsTable 
-              cars={cars}
-              userRole="admin"
+            <EnhancedCarsTable 
+              apiEndpoint="/api/cars"
               onPreview={handlePreviewCar}
-              onEdit={(car) => console.log('Edit car:', car)}
-              onDelete={(car) => console.log('Delete car:', car)}
             />
           </div>
         </div>
@@ -203,19 +127,7 @@ const AdminCars = () => {
           <CarPreview car={previewCar} onClose={handleClosePreview} isAdmin={true} />
         )}
       </div>
-      
-      {/* Overlay to slide table left */}
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: showPreview ? '-100%' : 0,
-        width: '100%',
-        height: '100vh',
-        transition: 'left 0.6s ease-in-out',
-        zIndex: showPreview ? -1 : 'auto'
-      }}>
-        {/* This creates the sliding effect for the main content */}
-      </div>
+
     </div>
   );
 };

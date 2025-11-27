@@ -27,7 +27,7 @@ const AvailableCars = () => {
       }
       
       const result = await response.json();
-      const carsData = result.data || [];
+      const carsData = result.data?.cars || [];
       
       // Filter cars with availability > 0
       const availableCars = carsData.filter(car => (car.available_quantity || 1) > 0);

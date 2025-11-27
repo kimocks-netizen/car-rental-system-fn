@@ -78,7 +78,10 @@ const MyBookings = () => {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ apply_cancellation_fee: true })
+        body: JSON.stringify({ 
+          apply_cancellation_fee: true,
+          cancelled_by: 'customer'
+        })
       });
       
       if (response.ok) {

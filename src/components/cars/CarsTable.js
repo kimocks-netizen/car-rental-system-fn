@@ -1,7 +1,8 @@
 import React from 'react';
 import DataTable from '../DataTable';
+import Badge from '../common/Badge';
 
-const CarsTable = ({ cars, userRole = 'admin', onPreview, onEdit, onDelete, showBookings = false, isPreviewOpen = false }) => {
+const CarsTable = ({ cars, userRole = 'admin', onPreview, onEdit, onDelete, showBookings = false, isPreviewOpen = false, totalCount }) => {
   
   const carColumns = [
     { 
@@ -17,7 +18,11 @@ const CarsTable = ({ cars, userRole = 'admin', onPreview, onEdit, onDelete, show
     },
     { key: 'brand', header: 'Brand' },
     { key: 'model', header: 'Model' },
-    { key: 'type', header: 'Type' },
+    { 
+      key: 'type', 
+      header: 'Type',
+      render: (type) => <Badge variant={type}>{type}</Badge>
+    },
     { key: 'year', header: 'Year' },
     ...(!isPreviewOpen ? [{ 
       key: 'daily_rate', 
@@ -105,7 +110,7 @@ const CarsTable = ({ cars, userRole = 'admin', onPreview, onEdit, onDelete, show
 
   return (
     <DataTable 
-      title={`All Cars (${cars.length})`}
+      title={`All Cars (${totalCount || cars.length})`}
       data={cars}
       columns={carColumns}
       actions={getCarActions()}

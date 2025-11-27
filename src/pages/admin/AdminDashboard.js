@@ -63,11 +63,7 @@ const AdminDashboard = () => {
                 />
               ))}
             </div>
-            
-            <div className="alert alert-info">
-              <h5>Admin Features Coming Soon!</h5>
-              <p className="mb-0">Full admin functionality will be available in upcoming modules.</p>
-            </div>
+
           </div>
         </div>
       </div>

@@ -208,17 +208,42 @@ const ReturnInspection = () => {
           </span>
         );
       }
+    },
+    {
+      key: 'action',
+      header: 'Action',
+      render: (value, row) => (
+        <button
+          onClick={() => handleInspectionStart(row)}
+          style={{
+            backgroundColor: '#28a745',
+            border: 'none',
+            color: 'white',
+            padding: '8px 16px',
+            borderRadius: '8px',
+            fontSize: '0.85rem',
+            fontWeight: '600',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.backgroundColor = '#218838';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = '#28a745';
+          }}
+        >
+          <i className="fas fa-clipboard-check"></i>
+          Start Inspection
+        </button>
+      )
     }
   ];
 
-  const actions = [
-    {
-      label: <i className="fas fa-clipboard-check" style={{ color: '#28a745' }}></i>,
-      className: 'btn-success',
-      title: 'Start Inspection',
-      onClick: handleInspectionStart
-    }
-  ];
+
 
   if (loading) {
     return (
@@ -247,7 +272,6 @@ const ReturnInspection = () => {
           title="Return Inspections"
           data={activeBookings}
           columns={columns}
-          actions={actions}
         />
       </div>
 
