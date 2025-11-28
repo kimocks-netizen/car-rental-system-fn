@@ -75,7 +75,6 @@ const Header = () => {
                 <nav>
                   <ul id="navigation">
                     {!isAuthenticated && <li><Link to="/home">Home</Link></li>}
-                    {!isAuthenticated && <li><Link to="/contact-us">Contact Us</Link></li>}
                     {!isAuthenticated && <li><Link to="/login">Login</Link></li>}
                     {!isAuthenticated && <li><Link to="/register">Register</Link></li>}
                     {isAuthenticated && user?.role === 'admin' && (
@@ -161,7 +160,6 @@ const Header = () => {
                   <nav>
                     <ul id="navigation">
                       {!isAuthenticated && <li><Link to="/home" onClick={toggleMenu}>Home</Link></li>}
-                      {!isAuthenticated && <li><Link to="/contact-us" onClick={toggleMenu}>Contact Us</Link></li>}
                       {!isAuthenticated && <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>}
                       {!isAuthenticated && <li><Link to="/register" onClick={toggleMenu}>Register</Link></li>}
                       {isAuthenticated && user?.role === 'admin' && (

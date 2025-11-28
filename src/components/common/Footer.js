@@ -59,7 +59,6 @@ const Footer = () => {
             <h4>Company</h4>
             <ul className="list-unstyled">
               <li><Link to="/home" onClick={handleScrollToTop}>Home</Link></li>
-              <li><Link to="/contact-us" onClick={handleScrollToTop}>Contact Us</Link></li>
               <li><Link to="/cars" onClick={handleScrollToTop}>Our Fleet</Link></li>
             </ul>
           </div>
