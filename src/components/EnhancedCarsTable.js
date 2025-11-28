@@ -3,7 +3,7 @@ import useFrontendTableData from '../hooks/useFrontendTableData';
 import EnhancedDataTable from './common/EnhancedDataTable';
 import Badge from './common/Badge';
 
-const EnhancedCarsTable = ({ apiEndpoint = '/admin/cars', onPreview, onDelete }) => {
+const EnhancedCarsTable = ({ apiEndpoint = '/admin/cars', onPreview, onDelete, onEdit }) => {
   // Fetch function for cars (fetch all data once)
   const fetchCars = async () => {
     const response = await fetch(`${process.env.REACT_APP_CAR_RENTAL_API_URL}${apiEndpoint}?limit=1000`, {
@@ -120,7 +120,9 @@ const EnhancedCarsTable = ({ apiEndpoint = '/admin/cars', onPreview, onDelete })
       label: 'Edit Car',
       icon: 'fas fa-edit',
       onClick: (car) => {
-        console.log('Edit car:', car);
+        if (onEdit) {
+          onEdit(car);
+        }
       }
     },
     {

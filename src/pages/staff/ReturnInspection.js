@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import DataTable from '../../components/DataTable';
+import { CancelButton, SubmitButton } from '../../components/common/ActionButtons';
 import { API_BASE_URL } from '../../utils/api';
 
 const ReturnInspection = () => {
@@ -466,52 +467,10 @@ const ReturnInspection = () => {
 
                   {/* Action Buttons */}
                   <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-                    <button
-                      onClick={() => setShowModal(false)}
-                      style={{
-                        padding: '12px 24px',
-                        backgroundColor: 'transparent',
-                        border: '2px solid #6c757d',
-                        borderRadius: '8px',
-                        color: '#6c757d',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.target.style.backgroundColor = '#6c757d';
-                        e.target.style.color = 'white';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.backgroundColor = 'transparent';
-                        e.target.style.color = '#6c757d';
-                      }}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleInspectionSubmit}
-                      style={{
-                        padding: '12px 24px',
-                        backgroundColor: '#28a745',
-                        border: '2px solid #28a745',
-                        borderRadius: '8px',
-                        color: 'white',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.target.style.backgroundColor = '#218838';
-                        e.target.style.borderColor = '#218838';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.backgroundColor = '#28a745';
-                        e.target.style.borderColor = '#28a745';
-                      }}
-                    >
+                    <CancelButton onClick={() => setShowModal(false)} />
+                    <SubmitButton onClick={handleInspectionSubmit}>
                       Complete Return
-                    </button>
+                    </SubmitButton>
                   </div>
                 </div>
               </div>
