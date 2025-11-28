@@ -3,7 +3,7 @@ import useFrontendTableData from '../hooks/useFrontendTableData';
 import EnhancedDataTable from './common/EnhancedDataTable';
 import Badge from './common/Badge';
 
-const EnhancedCarsTable = ({ apiEndpoint = '/admin/cars', onPreview }) => {
+const EnhancedCarsTable = ({ apiEndpoint = '/admin/cars', onPreview, onDelete }) => {
   // Fetch function for cars (fetch all data once)
   const fetchCars = async () => {
     const response = await fetch(`${process.env.REACT_APP_CAR_RENTAL_API_URL}${apiEndpoint}?limit=1000`, {
@@ -117,13 +117,6 @@ const EnhancedCarsTable = ({ apiEndpoint = '/admin/cars', onPreview }) => {
       }
     },
     {
-      label: 'View Details',
-      icon: 'fas fa-info-circle',
-      onClick: (car) => {
-        console.log('View car:', car);
-      }
-    },
-    {
       label: 'Edit Car',
       icon: 'fas fa-edit',
       onClick: (car) => {
@@ -134,8 +127,8 @@ const EnhancedCarsTable = ({ apiEndpoint = '/admin/cars', onPreview }) => {
       label: 'Delete Car',
       icon: 'fas fa-trash',
       onClick: (car) => {
-        if (window.confirm('Are you sure you want to delete this car?')) {
-          console.log('Delete car:', car);
+        if (onDelete) {
+          onDelete(car);
         }
       },
       disabled: (car) => car.availability_status === 'rented'

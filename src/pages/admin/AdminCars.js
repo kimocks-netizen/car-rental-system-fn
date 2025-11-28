@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { uploadCarImage } from '../../services/supabase';
 import CarPreview from '../../components/cars/CarPreview';
 import EnhancedCarsTable from '../../components/EnhancedCarsTable';
+import ConfirmationModal from '../../components/common/ConfirmationModal';
 import { API_BASE_URL } from '../../utils/api';
 
 const AdminCars = () => {
@@ -10,6 +11,9 @@ const AdminCars = () => {
   const [previewCar, setPreviewCar] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
   const [previewLoading, setPreviewLoading] = useState(false);
+  const [selectedCar, setSelectedCar] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const handlePreviewCar = async (car) => {
     setShowPreview(true);
@@ -27,6 +31,40 @@ const AdminCars = () => {
     setTimeout(() => {
       setPreviewCar(null);
     }, 300);
+  };
+
+  const handleDeleteCar = (car) => {
+    setSelectedCar(car);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteCar = async () => {
+    try {
+      setDeleting(true);
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch(`${API_BASE_URL}/cars/${selectedCar.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to delete car');
+      }
+      
+      setShowDeleteModal(false);
+      window.location.reload(); // Refresh to show updated list
+    } catch (err) {
+      console.error('Delete car error:', err);
+      alert('Error: ' + err.message);
+    } finally {
+      setDeleting(false);
+      setSelectedCar(null);
+    }
   };
 
   const handleAddCar = async (formData) => {
@@ -91,12 +129,25 @@ const AdminCars = () => {
             <EnhancedCarsTable 
               apiEndpoint="/cars"
               onPreview={handlePreviewCar}
+              onDelete={handleDeleteCar}
             />
           </div>
         </div>
       </div>
       
       {showAddModal && <AddCarModal onClose={() => setShowAddModal(false)} onSubmit={handleAddCar} uploading={uploading} />}
+      
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDeleteCar}
+        title="Delete Car"
+        message={selectedCar ? `Are you sure you want to delete the ${selectedCar.brand} ${selectedCar.model}? This action cannot be undone.` : ''}
+        confirmText="Delete Car"
+        cancelText="Cancel"
+        loading={deleting}
+        type="danger"
+      />
       
       {/* Sliding Preview */}
       <div style={{
