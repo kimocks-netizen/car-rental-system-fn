@@ -1,22 +1,22 @@
 import React from 'react';
+import PageHeader from '../../reference/PageHeader';
+import RegisterForm from '../../components/auth/RegisterForm';
+import "../../assets/css/style.css";
+import "../../styles/css/admin.css";
+import RegisterBackground from '../../assets/img/hero/register.png';
 
 const Register = () => {
   return (
-    <main>
-      <div className="slider-area2 position-relative" style={{minHeight: '60vh', display: 'flex', alignItems: 'center', background: '#000', color: 'white'}}>
-        <div className="container">
-          <div className="row">
-            <div className="col-xl-12">
-              <div className="hero-cap hero-cap2 pt-70 text-center">
-                <h2 style={{color: 'white'}}>Register</h2>
-                <p className="lead" style={{color: '#ccc'}}>This page is still under construction</p>
-                <p style={{color: '#ccc'}}>We're working hard to bring you the best car rental experience. Please check back soon!</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
+    <div className="black-bg">
+      {/* Hero Start */}
+      <PageHeader title="Register" sliderAreaClass="slider-area3" backgroundImage={RegisterBackground}/>
+      {/* Hero End */}
+
+      {/* Register Form */}
+      <main>
+        <RegisterForm />
+      </main>
+    </div>
   );
 };
 

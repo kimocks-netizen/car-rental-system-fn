@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { WOW } from 'wowjs';
 
 const RegisterForm = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +13,8 @@ const RegisterForm = () => {
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -46,10 +49,13 @@ const RegisterForm = () => {
       newErrors.email = 'Email is invalid';
     }
     
-    if (!formData.phone) {
-      newErrors.phone = 'Phone number is required';
-    } else if (!/^\+?[1-9]\d{1,14}$/.test(formData.phone.replace(/\s/g, ''))) {
-      newErrors.phone = 'Invalid phone number format';
+    // Optional phone validation - only validate if provided
+    if (formData.phone) {
+      const cleanPhone = formData.phone.replace(/\s/g, ''); // Remove spaces
+      // Check if starts with + (international format) or 0 (local format)
+      if (!/^(\+[1-9]\d{7,14}|0\d{9,14})$/.test(cleanPhone)) {
+        newErrors.phone = 'Phone must start with + (international) or 0 (local) and be 8-15 digits';
+      }
     }
     
     if (!formData.password) {
@@ -66,6 +72,11 @@ const RegisterForm = () => {
     
     return newErrors;
   };
+
+  useEffect(() => {
+    const wow = new WOW({ live: false });
+    wow.init();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -94,126 +105,157 @@ const RegisterForm = () => {
   };
 
   return (
-    <div className="card">
-      <div className="card-header">
-        <h3 className="text-center">Create Your Account</h3>
+    <section className="pricing-area section-padding30 fix">
+      <div className="container" style={{ marginTop: '-80px' }}>
+        <div className="properties__card wow fadeInUp" data-wow-duration="2s" data-wow-delay=".4s">
+          <div className="features-caption tnc-txt-color" style={{ marginTop: '0px' }}>
+            <h2 className="login-page-title">Create Your Account:</h2>
+            {errors.general && <p className="error-message">{errors.general}</p>}
+            <form onSubmit={handleSubmit} className="login-form">
+              {/* Row 1: Full Name and Email */}
+              <div className="row">
+                <div className="col-md-6">
+                  <div className="login-input">
+                    <label>Full Name:</label>
+                    <input
+                      type="text"
+                      name="full_name"
+                      value={formData.full_name}
+                      onChange={handleChange}
+                      required
+                    />
+                    {errors.full_name && <span className="error-message">{errors.full_name}</span>}
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <div className="login-input">
+                    <label>Email:</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                    />
+                    {errors.email && <span className="error-message">{errors.email}</span>}
+                  </div>
+                </div>
+              </div>
+              
+              {/* Row 2: Password and Confirm Password */}
+              <div className="row">
+                <div className="col-md-6">
+                  <div className="login-input" style={{ position: 'relative' }}>
+                    <label>Password:</label>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      required
+                      style={{ paddingRight: '40px' }}
+                    />
+                    <i 
+                      className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}
+                      onClick={() => setShowPassword(!showPassword)}
+                      style={{
+                        position: 'absolute',
+                        right: '12px',
+                        top: '38px',
+                        cursor: 'pointer',
+                        color: '#666'
+                      }}
+                    ></i>
+                    {errors.password && <span className="error-message">{errors.password}</span>}
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <div className="login-input" style={{ position: 'relative' }}>
+                    <label>Confirm Password:</label>
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      name="confirmPassword"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      required
+                      style={{ paddingRight: '40px' }}
+                    />
+                    <i 
+                      className={`fas ${showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'}`}
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      style={{
+                        position: 'absolute',
+                        right: '12px',
+                        top: '38px',
+                        cursor: 'pointer',
+                        color: '#666'
+                      }}
+                    ></i>
+                    {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
+                    {formData.password && formData.confirmPassword && formData.password === formData.confirmPassword && (
+                      <span style={{ color: '#28a745', fontSize: '0.9rem', marginTop: '5px', display: 'block' }}>
+                        ✓ Passwords match
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+              
+              {/* Row 3: Phone Number and Register Button */}
+              <div className="row">
+                <div className="col-md-6">
+                  <div className="login-input">
+                    <label>Phone Number (Optional):</label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="+1234567890 or 01234567890"
+                    />
+                    {errors.phone && <span className="error-message">{errors.phone}</span>}
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <div className="login-input">
+                    <label>&nbsp;</label>
+                    <button 
+                      type="submit" 
+                      disabled={isSubmitting}
+                      style={{
+                        width: '100%',
+                        padding: '12px 20px',
+                        backgroundColor: '#b71c1c',
+                        border: 'none',
+                        borderRadius: '5px',
+                        color: 'white',
+                        fontSize: '16px',
+                        fontWeight: 'bold',
+                        cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                        transition: 'all 0.3s ease',
+                        opacity: isSubmitting ? 0.7 : 1
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isSubmitting) {
+                          e.target.style.backgroundColor = '#28a745';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isSubmitting) {
+                          e.target.style.backgroundColor = '#b71c1c';
+                        }
+                      }}
+                    >
+                      {isSubmitting ? 'Creating Account...' : 'Create Account'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
-      <div className="card-body">
-        {errors.general && (
-          <div className="alert alert-danger" role="alert">
-            {errors.general}
-          </div>
-        )}
-        
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label htmlFor="full_name" className="form-label">Full Name</label>
-            <input 
-              type="text" 
-              className={`form-control ${errors.full_name ? 'is-invalid' : ''}`}
-              id="full_name"
-              name="full_name"
-              value={formData.full_name}
-              onChange={handleChange}
-              required 
-            />
-            {errors.full_name && (
-              <div className="invalid-feedback">
-                {errors.full_name}
-              </div>
-            )}
-          </div>
-
-          <div className="mb-3">
-            <label htmlFor="email" className="form-label">Email Address</label>
-            <input 
-              type="email" 
-              className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required 
-            />
-            {errors.email && (
-              <div className="invalid-feedback">
-                {errors.email}
-              </div>
-            )}
-          </div>
-
-          <div className="mb-3">
-            <label htmlFor="phone" className="form-label">Phone Number</label>
-            <input 
-              type="tel" 
-              className={`form-control ${errors.phone ? 'is-invalid' : ''}`}
-              id="phone"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              placeholder="+1234567890"
-              required 
-            />
-            {errors.phone && (
-              <div className="invalid-feedback">
-                {errors.phone}
-              </div>
-            )}
-          </div>
-          
-          <div className="mb-3">
-            <label htmlFor="password" className="form-label">Password</label>
-            <input 
-              type="password" 
-              className={`form-control ${errors.password ? 'is-invalid' : ''}`}
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required 
-            />
-            {errors.password && (
-              <div className="invalid-feedback">
-                {errors.password}
-              </div>
-            )}
-          </div>
-
-          <div className="mb-3">
-            <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
-            <input 
-              type="password" 
-              className={`form-control ${errors.confirmPassword ? 'is-invalid' : ''}`}
-              id="confirmPassword"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              required 
-            />
-            {errors.confirmPassword && (
-              <div className="invalid-feedback">
-                {errors.confirmPassword}
-              </div>
-            )}
-          </div>
-          
-          <button 
-            type="submit" 
-            className="btn btn-primary w-100"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <>
-                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Creating Account...
-              </>
-            ) : (
-              'Create Account'
-            )}
-          </button>
-        </form>
-      </div>
-    </div>
+    </section>
   );
 };
 
