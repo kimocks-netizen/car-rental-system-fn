@@ -57,6 +57,8 @@ const BookingPage = () => {
         pickup_location: bookingDetails.pickupLocation,
         dropoff_location: bookingDetails.dropoffLocation,
         total_amount: Number(bookingDetails.totalCost),
+        useAlternativeEmail: bookingDetails.useAlternativeEmail,
+        alternativeEmail: bookingDetails.alternativeEmail,
         payment_details: {
           card_last_four: paymentData.cardNumber.slice(-4),
           cardholder_name: paymentData.cardholderName
