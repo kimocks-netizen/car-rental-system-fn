@@ -116,7 +116,21 @@ const Header = () => {
 
               {isAuthenticated && (
                 <div className="d-none d-lg-flex align-items-center" style={{gap: '15px'}}>
-                  <h2 style={{color: 'white', margin: 0, fontSize: '16px', fontWeight: 'normal'}}>Welcome, {user?.full_name}</h2>
+                  <Link 
+                    to={(user?.role === 'admin' || user?.role === 'staff') ? `/${user.role}/change-password` : '/profile'}
+                    style={{
+                      color: 'white', 
+                      margin: 0, 
+                      fontSize: '16px', 
+                      fontWeight: 'normal',
+                      textDecoration: 'none',
+                      transition: 'color 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => e.target.style.color = '#dc3545'}
+                    onMouseLeave={(e) => e.target.style.color = 'white'}
+                  >
+                    Welcome, {user?.full_name}
+                  </Link>
                   {user?.role === 'customer' && (
                     <div style={{
                       backgroundColor: '#28a745',

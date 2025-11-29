@@ -33,6 +33,8 @@ import StaffDashboard from './pages/staff/StaffDashboard';
 import StaffBookings from './pages/staff/StaffBookings';
 import StaffCars from './pages/staff/StaffCars';
 import ReturnInspection from './pages/staff/ReturnInspection';
+import AdminChangePassword from './pages/admin/ChangePassword';
+import StaffChangePassword from './pages/staff/ChangePassword';
 import Header from './components/Header';
 import AvailableCars from './pages/public/AvailableCars';
 import CarPreview from './pages/public/CarPreview';
@@ -222,6 +224,16 @@ const App = ({showContactUs=true}) => {
             <AdminRoute>
               <AdminCars />
             </AdminRoute>
+          } />
+          <Route path="/admin/change-password" element={
+            <AdminRoute>
+              <AdminChangePassword />
+            </AdminRoute>
+          } />
+          <Route path="/staff/change-password" element={
+            <StaffRoute>
+              <StaffChangePassword />
+            </StaffRoute>
           } />
           
           {/* Unauthorized page */}

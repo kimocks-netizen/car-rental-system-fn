@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 import { CancelButton, SubmitButton } from '../../components/common/ActionButtons';
 import Badge from '../../components/common/Badge';
+import ChangePasswordCard from '../../components/common/ChangePasswordCard';
 import { API_BASE_URL } from '../../utils/api';
 
 const Profile = () => {
@@ -244,13 +245,14 @@ const Profile = () => {
               </div>
             )}
 
-            {/* Profile Information Section */}
-            <div className="mb-5" style={{
-              backgroundColor: 'rgba(0, 0, 0, 0.9)',
-              border: '2px solid #dc3545',
-              borderRadius: '15px',
-              padding: '30px'
-            }}>
+            {/* Profile Information Section - Only for customers */}
+            {user?.role === 'customer' && (
+              <div className="mb-5" style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                border: '2px solid #dc3545',
+                borderRadius: '15px',
+                padding: '30px'
+              }}>
               <form onSubmit={handleProfileSubmit}>
                 <h4 style={{ color: 'white', marginBottom: '25px', borderBottom: '2px solid #dc3545', paddingBottom: '10px' }}>Profile Information</h4>
                 
@@ -341,100 +343,20 @@ const Profile = () => {
                   </SubmitButton>
                 </div>
               </form>
-            </div>
+              </div>
+            )}
 
-            {/* Change Password Section */}
-            <div className="mb-5" style={{
-              backgroundColor: 'rgba(0, 0, 0, 0.9)',
-              border: '2px solid #dc3545',
-              borderRadius: '15px',
-              padding: '30px'
-            }}>
-              <form onSubmit={handlePasswordSubmit}>
-                <h4 style={{ color: 'white', marginBottom: '25px', borderBottom: '2px solid #dc3545', paddingBottom: '10px' }}>Change Password</h4>
-                
-                <div className="row">
-                  <div className="col-md-4 mb-3">
-                    <label style={{ color: 'white', marginBottom: '8px', fontWeight: '500' }}>Current Password *</label>
-                    <input
-                      type="password"
-                      name="currentPassword"
-                      className="form-control"
-                      value={passwordData.currentPassword}
-                      onChange={handlePasswordChange}
-                      required
-                      style={{
-                        backgroundColor: 'rgba(255,255,255,0.1)',
-                        border: '1px solid #555',
-                        color: 'white',
-                        padding: '12px',
-                        fontSize: '16px'
-                      }}
-                    />
-                    {errors.currentPassword && <span style={{ color: '#dc3545', fontSize: '0.9rem' }}>{errors.currentPassword}</span>}
-                  </div>
-                  
-                  <div className="col-md-4 mb-3">
-                    <label style={{ color: 'white', marginBottom: '8px', fontWeight: '500' }}>New Password *</label>
-                    <input
-                      type="password"
-                      name="newPassword"
-                      className="form-control"
-                      value={passwordData.newPassword}
-                      onChange={handlePasswordChange}
-                      required
-                      style={{
-                        backgroundColor: 'rgba(255,255,255,0.1)',
-                        border: '1px solid #555',
-                        color: 'white',
-                        padding: '12px',
-                        fontSize: '16px'
-                      }}
-                    />
-                    {errors.newPassword && <span style={{ color: '#dc3545', fontSize: '0.9rem' }}>{errors.newPassword}</span>}
-                  </div>
-                  
-                  <div className="col-md-4 mb-3">
-                    <label style={{ color: 'white', marginBottom: '8px', fontWeight: '500' }}>Confirm New Password *</label>
-                    <input
-                      type="password"
-                      name="confirmPassword"
-                      className="form-control"
-                      value={passwordData.confirmPassword}
-                      onChange={handlePasswordChange}
-                      required
-                      style={{
-                        backgroundColor: 'rgba(255,255,255,0.1)',
-                        border: '1px solid #555',
-                        color: 'white',
-                        padding: '12px',
-                        fontSize: '16px'
-                      }}
-                    />
-                    {errors.confirmPassword && <span style={{ color: '#dc3545', fontSize: '0.9rem' }}>{errors.confirmPassword}</span>}
-                    {passwordData.newPassword && passwordData.confirmPassword && passwordData.newPassword === passwordData.confirmPassword && (
-                      <span style={{ color: '#28a745', fontSize: '0.9rem', marginTop: '5px', display: 'block' }}>
-                        ✓ Passwords match
-                      </span>
-                    )}
-                  </div>
-                </div>
-                
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
-                  <SubmitButton type="submit" loading={loading.password}>
-                    {loading.password ? 'Changing...' : 'Change Password'}
-                  </SubmitButton>
-                </div>
-              </form>
-            </div>
+            {/* Change Password Section - Available for all user types */}
+            <ChangePasswordCard />
 
-            {/* Delete Account Section */}
-            <div style={{
-              backgroundColor: 'rgba(0, 0, 0, 0.9)',
-              border: '2px solid #dc3545',
-              borderRadius: '15px',
-              padding: '30px'
-            }}>
+            {/* Delete Account Section - Only for customers */}
+            {user?.role === 'customer' && (
+              <div style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                border: '2px solid #dc3545',
+                borderRadius: '15px',
+                padding: '30px'
+              }}>
               <h4 style={{ color: 'white', marginBottom: '25px', borderBottom: '2px solid #dc3545', paddingBottom: '10px' }}>Danger Zone</h4>
               
               {(() => {
@@ -530,7 +452,8 @@ const Profile = () => {
                   </div>
                 );
               })()}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
