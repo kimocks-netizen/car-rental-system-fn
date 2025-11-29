@@ -40,18 +40,7 @@ const CustomerDashboard = () => {
       <div className="container">
         <div className="row">
           <div className="col-12">
-            {/* Welcome Header */}
-            {/* <div style={{
-              backgroundColor: 'rgba(0, 0, 0, 0.9)',
-              border: '2px solid #dc3545',
-              borderRadius: '15px',
-              padding: '20px',
-              marginBottom: '30px',
-              textAlign: 'center'
-            }}>
-              <h2 style={{ color: 'white', margin: 0 }}>Welcome, {user?.full_name}</h2>
-              <p style={{ color: '#ccc', margin: 0, fontSize: '1.1rem' }}>Ready for your next adventure?</p>
-            </div> */}
+
             
             <div className="row">
               {dashboardItems.map((item, index) => (
@@ -72,25 +61,25 @@ const CustomerDashboard = () => {
               backgroundColor: 'rgba(0, 0, 0, 0.9)',
               border: '2px solid #dc3545',
               borderRadius: '15px',
-              padding: '30px',
+              padding: '25px',
               textAlign: 'center',
               marginTop: '30px'
             }}>
               <div style={{
                 backgroundColor: '#dc3545',
                 borderRadius: '50%',
-                width: '80px',
-                height: '80px',
+                width: '60px',
+                height: '60px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                margin: '0 auto 20px'
+                margin: '0 auto 15px'
               }}>
-                <i className="fas fa-rocket" style={{ fontSize: '2rem', color: 'white' }}></i>
+                <i className="fas fa-check-circle" style={{ fontSize: '1.5rem', color: 'white' }}></i>
               </div>
-              <h3 style={{ color: 'white', marginBottom: '15px' }}>Coming Soon!</h3>
-              <p style={{ color: '#ccc', fontSize: '1.1rem', marginBottom: 0 }}>
-                Full dashboard functionality will be available in upcoming modules.
+              <h3 style={{ color: 'white', marginBottom: '10px' }}>Everything Ready!</h3>
+              <p style={{ color: '#ccc', fontSize: '1rem', marginBottom: 0 }}>
+                Explore our fleet, track your reservations, and manage your account with ease.
               </p>
             </div>
           </div>
