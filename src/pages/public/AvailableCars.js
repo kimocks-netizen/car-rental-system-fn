@@ -31,24 +31,24 @@ const AvailableCars = () => {
 
   const applyFilters = (carsToFilter = cars) => {
     let filtered = [...carsToFilter];
-    
+
     // Apply type filter
     if (filterType !== 'all') {
       filtered = filtered.filter(car => car.type?.toLowerCase() === filterType.toLowerCase());
     }
-    
+
     // Apply fuel type filter
     if (filterFuelType !== 'all') {
       filtered = filtered.filter(car => car.fuel_type?.toLowerCase() === filterFuelType.toLowerCase());
     }
-    
+
     // Apply transmission filter
     if (filterTransmission !== 'all') {
       filtered = filtered.filter(car => car.transmission?.toLowerCase() === filterTransmission.toLowerCase());
     }
-    
 
-    
+
+
     // Apply items limit
     const finalFiltered = itemsToShow === 'all' ? filtered : filtered.slice(0, itemsToShow);
     setFilteredCars(finalFiltered);
@@ -58,14 +58,14 @@ const AvailableCars = () => {
     try {
       setLoading(true);
       const response = await fetch(`${API_BASE_URL}/cars/available`);
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch cars');
       }
-      
+
       const result = await response.json();
       const carsData = result.data?.cars || result.data || [];
-      
+
       // Filter cars with availability > 0
       const availableCars = carsData.filter(car => (car.available_quantity || 1) > 0);
       setCars(availableCars);
@@ -85,7 +85,7 @@ const AvailableCars = () => {
   const handlePreview = async (car) => {
     setShowPreview(true);
     setPreviewLoading(true);
-    
+
     setTimeout(() => {
       setPreviewCar(car);
       setPreviewLoading(false);
@@ -163,37 +163,10 @@ const AvailableCars = () => {
                 <h1 className="text-white mb-2">Available Cars for Rent</h1>
                 <p className="text-light">Choose from our premium fleet of vehicles</p>
               </div>
-              <div className="d-flex align-items-center gap-3 flex-wrap">
+              <div className="d-flex align-items-center flex-wrap" style={{ gap: '8px' }}>
                 <div className="d-flex align-items-center gap-2">
-                  <label style={{ color: 'white', marginBottom: 0, fontSize: '14px' }}>Items:</label>
-                  <select 
-                    value={itemsToShow}
-                    onChange={(e) => {
-                      const value = e.target.value === 'all' ? 'all' : parseInt(e.target.value);
-                      setItemsToShow(value);
-                      applyFilters();
-                    }}
-                    style={{
-                      backgroundColor: 'rgba(255,255,255,0.1)',
-                      border: '1px solid #555',
-                      color: 'white',
-                      padding: '8px 12px',
-                      borderRadius: '5px',
-                      fontSize: '14px',
-                      minWidth: '80px'
-                    }}
-                  >
-                    <option value={3} style={{ backgroundColor: '#333', color: 'white' }}>3</option>
-                    <option value={6} style={{ backgroundColor: '#333', color: 'white' }}>6</option>
-                    <option value={12} style={{ backgroundColor: '#333', color: 'white' }}>12</option>
-                    <option value={18} style={{ backgroundColor: '#333', color: 'white' }}>18</option>
-                    <option value="all" style={{ backgroundColor: '#333', color: 'white' }}>All</option>
-                  </select>
-                </div>
-                
-                <div className="d-flex align-items-center gap-2">
-                  <label style={{ color: 'white', marginBottom: 0, fontSize: '14px' }}>Category:</label>
-                  <select 
+                  {/* <label style={{ color: 'white', marginBottom: 0, fontSize: '14px' }}>Category:</label> */}
+                  <select
                     value={filterType}
                     onChange={(e) => {
                       setFilterType(e.target.value);
@@ -218,10 +191,10 @@ const AvailableCars = () => {
                     <option value="van" style={{ backgroundColor: '#333', color: 'white' }}>Van</option>
                   </select>
                 </div>
-                
+
                 <div className="d-flex align-items-center gap-2">
-                  <label style={{ color: 'white', marginBottom: 0, fontSize: '14px' }}>Engine:</label>
-                  <select 
+                  {/* <label style={{ color: 'white', marginBottom: 0, fontSize: '14px' }}>Eng: </label> */}
+                  <select
                     value={filterFuelType}
                     onChange={(e) => {
                       setFilterFuelType(e.target.value);
@@ -244,10 +217,10 @@ const AvailableCars = () => {
                     <option value="hybrid" style={{ backgroundColor: '#333', color: 'white' }}>Hybrid</option>
                   </select>
                 </div>
-                
+
                 <div className="d-flex align-items-center gap-2">
-                  <label style={{ color: 'white', marginBottom: 0, fontSize: '14px' }}>Gearbox:</label>
-                  <select 
+                  {/* <label style={{ color: 'white', marginBottom: 0, fontSize: '14px' }}>Gearbox:</label> */}
+                  <select
                     value={filterTransmission}
                     onChange={(e) => {
                       setFilterTransmission(e.target.value);
@@ -263,12 +236,38 @@ const AvailableCars = () => {
                       minWidth: '100px'
                     }}
                   >
-                    <option value="all" style={{ backgroundColor: '#333', color: 'white' }}>All</option>
+                    <option value="all" style={{ backgroundColor: '#333', color: 'white' }}>Transimission</option>
                     <option value="automatic" style={{ backgroundColor: '#333', color: 'white' }}>Automatic</option>
                     <option value="manual" style={{ backgroundColor: '#333', color: 'white' }}>Manual</option>
                   </select>
+
                 </div>
-                
+                <div className="d-flex align-items-center gap-2">
+                  {/* <label style={{ color: 'white', marginBottom: 0, fontSize: '14px' }}>Items:</label> */}
+                  <select
+                    value={itemsToShow}
+                    onChange={(e) => {
+                      const value = e.target.value === 'all' ? 'all' : parseInt(e.target.value);
+                      setItemsToShow(value);
+                      applyFilters();
+                    }}
+                    style={{
+                      backgroundColor: 'rgba(255,255,255,0.1)',
+                      border: '1px solid #555',
+                      color: 'white',
+                      padding: '8px 12px',
+                      borderRadius: '5px',
+                      fontSize: '14px',
+                      minWidth: '80px'
+                    }}
+                  >
+                    <option value={3} style={{ backgroundColor: '#333', color: 'white' }}>3</option>
+                    <option value={6} style={{ backgroundColor: '#333', color: 'white' }}>6</option>
+                    <option value={12} style={{ backgroundColor: '#333', color: 'white' }}>12</option>
+                    <option value={18} style={{ backgroundColor: '#333', color: 'white' }}>18</option>
+                    <option value="all" style={{ backgroundColor: '#333', color: 'white' }}>All</option>
+                  </select>
+                </div>
 
               </div>
             </div>
@@ -290,7 +289,7 @@ const AvailableCars = () => {
           </div>
         )}
       </div>
-      
+
       {/* Sliding Preview */}
       <div style={{
         position: 'fixed',
