@@ -72,6 +72,8 @@ const ActionsDropdown = ({ actions, row }) => {
         >
           {actions.map((action, index) => {
             const isDisabled = action.disabled ? action.disabled(row) : false;
+            const label = typeof action.label === 'function' ? action.label(row) : action.label;
+            const icon = typeof action.icon === 'function' ? action.icon(row) : action.icon;
             return (
               <button
                 key={index}
@@ -102,8 +104,8 @@ const ActionsDropdown = ({ actions, row }) => {
                 }}
 
               >
-                <i className={`${action.icon}`} style={{ width: '16px', marginRight: '10px' }}></i>
-                {action.label}
+                <i className={`${icon}`} style={{ width: '16px', marginRight: '10px' }}></i>
+                {label}
               </button>
             );
           })}

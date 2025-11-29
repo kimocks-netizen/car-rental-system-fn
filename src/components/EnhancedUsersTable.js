@@ -229,17 +229,10 @@ const EnhancedUsersTable = ({ apiEndpoint = '/admin/users' }) => {
       onClick: handleEditUser
     },
     {
-      label: 'Suspend User',
-      icon: 'fas fa-ban',
-      onClick: handleSuspendUser,
-      disabled: (user) => user.user_status === 'suspended' || user.user_role === 'admin',
-      hidden: (user) => user.user_status === 'suspended'
-    },
-    {
-      label: 'Unsuspend User',
-      icon: 'fas fa-check-circle',
-      onClick: handleUnsuspendUser,
-      hidden: (user) => user.user_status !== 'suspended' || user.user_role === 'admin'
+      label: (user) => (user.user_status === 'suspended') ? 'Unsuspend User' : 'Suspend User',
+      icon: (user) => (user.user_status === 'suspended') ? 'fas fa-check-circle' : 'fas fa-ban',
+      onClick: (user) => (user.user_status === 'suspended') ? handleUnsuspendUser(user) : handleSuspendUser(user),
+      disabled: (user) => user.user_role === 'admin'
     },
     {
       label: 'Delete User',
