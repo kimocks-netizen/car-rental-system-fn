@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import useFrontendTableData from '../hooks/useFrontendTableData';
 import EnhancedDataTable from './common/EnhancedDataTable';
 import Badge from './common/Badge';
+import ConfirmationModal from './common/ConfirmationModal';
+import { API_BASE_URL } from '../utils/api';
 
 const EnhancedBookingsTable = ({ apiEndpoint = '/admin/bookings' }) => {
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState('');
   // Fetch function for bookings with customer and car data
   const fetchBookings = async () => {
     const [bookingsResponse, carsResponse, usersResponse] = await Promise.all([
@@ -132,32 +137,58 @@ const EnhancedBookingsTable = ({ apiEndpoint = '/admin/bookings' }) => {
     }
   ];
 
+  const handleStatusUpdate = (booking, newStatus) => {
+    setSelectedBooking({ ...booking, newStatus });
+    setModalType(newStatus);
+    setShowModal(true);
+  };
+
+  const confirmStatusUpdate = async () => {
+    try {
+      const payload = { 
+        status: selectedBooking.newStatus,
+        ...(selectedBooking.newStatus === 'cancelled' && { cancelled_by: 'admin' })
+      };
+      
+      const response = await fetch(`${API_BASE_URL}/bookings/${selectedBooking.id}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        refresh();
+      }
+    } catch (error) {
+      console.error('Error updating booking:', error);
+    } finally {
+      setShowModal(false);
+      setSelectedBooking(null);
+    }
+  };
+
   // Actions configuration
   const actions = [
     {
-      label: 'View Details',
-      icon: 'fas fa-eye',
-      onClick: (booking) => {
-        console.log('View booking:', booking);
-      }
-    },
-    {
-      label: 'Confirm Booking',
+      label: 'Approve Booking',
       icon: 'fas fa-check',
-      onClick: (booking) => {
-        console.log('Confirm booking:', booking);
-      },
+      onClick: (booking) => handleStatusUpdate(booking, 'confirmed'),
       disabled: (booking) => booking.status !== 'pending'
     },
     {
       label: 'Cancel Booking',
       icon: 'fas fa-times',
-      onClick: (booking) => {
-        if (window.confirm('Are you sure you want to cancel this booking?')) {
-          console.log('Cancel booking:', booking);
-        }
-      },
+      onClick: (booking) => handleStatusUpdate(booking, 'cancelled'),
       disabled: (booking) => ['cancelled', 'completed'].includes(booking.status)
+    },
+    {
+      label: 'Start Rental',
+      icon: 'fas fa-play',
+      onClick: (booking) => handleStatusUpdate(booking, 'active'),
+      disabled: (booking) => booking.status !== 'confirmed'
     }
   ];
 
@@ -190,7 +221,8 @@ const EnhancedBookingsTable = ({ apiEndpoint = '/admin/bookings' }) => {
   ];
 
   return (
-    <EnhancedDataTable
+    <>
+      <EnhancedDataTable
       title="Bookings Management"
       data={bookings}
       columns={columns}
@@ -220,7 +252,17 @@ const EnhancedBookingsTable = ({ apiEndpoint = '/admin/bookings' }) => {
       itemsPerPage={itemsPerPage}
       onPageChange={handlePageChange}
       onItemsPerPageChange={handleItemsPerPageChange}
-    />
+      />
+
+      <ConfirmationModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onConfirm={confirmStatusUpdate}
+        title={`Update Booking Status`}
+        message={`Are you sure you want to ${modalType} this booking?`}
+        type={modalType === 'cancelled' ? 'danger' : 'primary'}
+      />
+    </>
   );
 };
 

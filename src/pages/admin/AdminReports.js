@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DashboardStats from '../../components/DashboardStats';
 import EnhancedBookingsTable from '../../components/EnhancedBookingsTable';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 import adminService from '../../services/adminService';
 import {
   Chart as ChartJS,
@@ -53,12 +54,8 @@ const AdminReports = () => {
 
   if (loading) {
     return (
-      <div style={{minHeight: '100vh', paddingTop: '120px', backgroundImage: 'url(/photos/hero2.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>
-        <div className="container">
-          <div className="text-center text-white">
-            <h3>Loading reports...</h3>
-          </div>
-        </div>
+      <div style={{minHeight: '100vh', paddingTop: '120px', backgroundImage: 'url(/photos/hero2.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+        <LoadingSpinner />
       </div>
     );
   }

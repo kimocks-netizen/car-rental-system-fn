@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CarCard from '../../components/cars/CarCard';
 import CarPreview from '../../components/cars/CarPreview';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { API_BASE_URL } from '../../utils/api';
 
 const AvailableCars = () => {
@@ -107,16 +108,12 @@ const AvailableCars = () => {
         backgroundImage: 'url(/photos/hero2.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
+        backgroundAttachment: 'fixed',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
       }}>
-        <div className="container">
-          <div className="text-center text-white">
-            <div className="spinner-border text-light" role="status">
-              <span className="sr-only">Loading...</span>
-            </div>
-            <h3 className="mt-3">Loading available cars...</h3>
-          </div>
-        </div>
+        <LoadingSpinner />
       </div>
     );
   }
@@ -159,7 +156,7 @@ const AvailableCars = () => {
         <div className="row mb-4">
           <div className="col-12">
             <div className="d-flex justify-content-between align-items-center flex-wrap">
-              <div className="text-center flex-grow-1">
+              <div className="flex-grow-1">
                 <h1 className="text-white mb-2">Available Cars for Rent</h1>
                 <p className="text-light">Choose from our premium fleet of vehicles</p>
               </div>
@@ -307,13 +304,9 @@ const AvailableCars = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            height: '100vh',
-            color: 'white'
+            height: '100vh'
           }}>
-            <div className="text-center">
-              <div className="spinner-border text-light mb-3" role="status"></div>
-              <h4>Loading car preview...</h4>
-            </div>
+            <LoadingSpinner />
           </div>
         ) : previewCar && (
           <CarPreview car={previewCar} onClose={handleClosePreview} mode="customer" />

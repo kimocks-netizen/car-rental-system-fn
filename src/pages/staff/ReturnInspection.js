@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import DataTable from '../../components/DataTable';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { CancelButton, SubmitButton } from '../../components/common/ActionButtons';
 import { API_BASE_URL } from '../../utils/api';
 
@@ -248,14 +249,8 @@ const ReturnInspection = () => {
 
   if (loading) {
     return (
-      <div style={{minHeight: '100vh', paddingTop: '120px', backgroundImage: 'url(/photos/hero2.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>
-        <div className="container">
-          <div className="text-center">
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        </div>
+      <div style={{minHeight: '100vh', paddingTop: '120px', backgroundImage: 'url(/photos/hero2.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+        <LoadingSpinner />
       </div>
     );
   }

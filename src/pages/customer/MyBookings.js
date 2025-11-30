@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { API_BASE_URL } from '../../utils/api';
 
 const MyBookings = () => {
@@ -192,8 +193,7 @@ const MyBookings = () => {
             padding: '40px',
             textAlign: 'center'
           }}>
-            <div className="spinner-border text-light mb-3" role="status"></div>
-            <h4 style={{ color: 'white' }}>Loading your bookings...</h4>
+            <LoadingSpinner />
           </div>
         ) : bookings.length === 0 ? (
           <div style={{
