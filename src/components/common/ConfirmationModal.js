@@ -32,8 +32,10 @@ const ConfirmationModal = ({
       backgroundColor: 'rgba(0,0,0,0.8)',
       display: 'flex',
       justifyContent: 'center',
-      alignItems: 'center',
-      zIndex: 1000
+      alignItems: 'flex-start',
+      paddingTop: '100px',
+      zIndex: 1000,
+      overflow: 'auto'
     }}>
       <div style={{
         backgroundColor: 'rgba(0, 0, 0, 0.95)',
