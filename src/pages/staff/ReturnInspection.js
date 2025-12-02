@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import DataTable from '../../components/DataTable';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { CancelButton, SubmitButton } from '../../components/common/ActionButtons';
 import { API_BASE_URL } from '../../utils/api';
 
 const ReturnInspection = () => {
@@ -208,28 +210,47 @@ const ReturnInspection = () => {
           </span>
         );
       }
+    },
+    {
+      key: 'action',
+      header: 'Action',
+      render: (value, row) => (
+        <button
+          onClick={() => handleInspectionStart(row)}
+          style={{
+            backgroundColor: '#28a745',
+            border: 'none',
+            color: 'white',
+            padding: '8px 16px',
+            borderRadius: '8px',
+            fontSize: '0.85rem',
+            fontWeight: '600',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.backgroundColor = '#218838';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = '#28a745';
+          }}
+        >
+          <i className="fas fa-clipboard-check"></i>
+          Start Inspection
+        </button>
+      )
     }
   ];
 
-  const actions = [
-    {
-      label: <i className="fas fa-clipboard-check" style={{ color: '#28a745' }}></i>,
-      className: 'btn-success',
-      title: 'Start Inspection',
-      onClick: handleInspectionStart
-    }
-  ];
+
 
   if (loading) {
     return (
-      <div style={{minHeight: '100vh', paddingTop: '120px', backgroundImage: 'url(/photos/hero2.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>
-        <div className="container">
-          <div className="text-center">
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        </div>
+      <div style={{minHeight: '100vh', paddingTop: '120px', backgroundImage: 'url(/photos/hero2.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+        <LoadingSpinner />
       </div>
     );
   }
@@ -247,7 +268,6 @@ const ReturnInspection = () => {
           title="Return Inspections"
           data={activeBookings}
           columns={columns}
-          actions={actions}
         />
       </div>
 
@@ -442,52 +462,10 @@ const ReturnInspection = () => {
 
                   {/* Action Buttons */}
                   <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-                    <button
-                      onClick={() => setShowModal(false)}
-                      style={{
-                        padding: '12px 24px',
-                        backgroundColor: 'transparent',
-                        border: '2px solid #6c757d',
-                        borderRadius: '8px',
-                        color: '#6c757d',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.target.style.backgroundColor = '#6c757d';
-                        e.target.style.color = 'white';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.backgroundColor = 'transparent';
-                        e.target.style.color = '#6c757d';
-                      }}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleInspectionSubmit}
-                      style={{
-                        padding: '12px 24px',
-                        backgroundColor: '#28a745',
-                        border: '2px solid #28a745',
-                        borderRadius: '8px',
-                        color: 'white',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.target.style.backgroundColor = '#218838';
-                        e.target.style.borderColor = '#218838';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.backgroundColor = '#28a745';
-                        e.target.style.borderColor = '#28a745';
-                      }}
-                    >
+                    <CancelButton onClick={() => setShowModal(false)} />
+                    <SubmitButton onClick={handleInspectionSubmit}>
                       Complete Return
-                    </button>
+                    </SubmitButton>
                   </div>
                 </div>
               </div>

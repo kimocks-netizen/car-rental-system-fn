@@ -1,4 +1,5 @@
 import React from 'react';
+import ActionsDropdown from './common/ActionsDropdown';
 
 const DataTable = ({ title, data, columns, actions }) => {
   if (!data || data.length === 0) {
@@ -108,49 +109,7 @@ const DataTable = ({ title, data, columns, actions }) => {
                     textAlign: 'center',
                     verticalAlign: 'middle'
                   }}>
-                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                      {actions.map((action, actionIndex) => {
-                        const isDisabled = action.disabled ? action.disabled(row) : false;
-                        return (
-                          <button
-                            key={actionIndex}
-                            className={`btn ${action.className}`}
-                            onClick={() => !isDisabled && action.onClick(row)}
-                            title={action.title}
-                            disabled={isDisabled}
-                            style={{
-                              width: '36px',
-                              height: '36px',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              fontSize: '16px',
-                              border: 'none',
-                              background: 'transparent',
-                              padding: '0',
-                              borderRadius: '8px',
-                              transition: 'all 0.2s ease',
-                              opacity: isDisabled ? 0.3 : 1,
-                              cursor: isDisabled ? 'not-allowed' : 'pointer'
-                            }}
-                            onMouseEnter={(e) => {
-                              if (!isDisabled) {
-                                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                                e.currentTarget.style.transform = 'scale(1.1)';
-                              }
-                            }}
-                            onMouseLeave={(e) => {
-                              if (!isDisabled) {
-                                e.currentTarget.style.backgroundColor = 'transparent';
-                                e.currentTarget.style.transform = 'scale(1)';
-                              }
-                            }}
-                          >
-                            {action.label}
-                          </button>
-                        );
-                      })}
-                    </div>
+                    <ActionsDropdown actions={actions} row={row} />
                   </td>
                 )}
               </tr>

@@ -2,10 +2,11 @@ import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
-const CarCard = ({ car, onBookNow, onPreview }) => {
+const CarCard = ({ car, onBookNow, onPreview, onShowCalendar }) => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const defaultImage = '/photos/car1.jpg';
+  const isAvailable = (car.available_quantity || 1) > 0;
   
   return (
     <div style={{
@@ -213,6 +214,12 @@ const CarCard = ({ car, onBookNow, onPreview }) => {
           {onBookNow && (
             <button
               onClick={() => {
+                if (!isAvailable) {
+                  if (onShowCalendar) {
+                    onShowCalendar(car);
+                  }
+                  return;
+                }
                 if (isAuthenticated) {
                   onBookNow(car);
                 } else {
@@ -220,7 +227,7 @@ const CarCard = ({ car, onBookNow, onPreview }) => {
                 }
               }}
               style={{
-                backgroundColor: '#dc3545',
+                backgroundColor: isAvailable ? '#dc3545' : '#6c757d',
                 border: 'none',
                 color: 'white',
                 padding: '10px 20px',
@@ -228,19 +235,24 @@ const CarCard = ({ car, onBookNow, onPreview }) => {
                 fontWeight: 'bold',
                 fontSize: '0.9rem',
                 transition: 'all 0.3s ease',
-                cursor: 'pointer'
+                cursor: isAvailable ? 'pointer' : 'not-allowed',
+                opacity: isAvailable ? 1 : 0.7
               }}
               onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#c82333';
-                e.target.style.transform = 'scale(1.05)';
+                if (isAvailable) {
+                  e.target.style.backgroundColor = '#c82333';
+                  e.target.style.transform = 'scale(1.05)';
+                }
               }}
               onMouseLeave={(e) => {
-                e.target.style.backgroundColor = '#dc3545';
-                e.target.style.transform = 'scale(1)';
+                if (isAvailable) {
+                  e.target.style.backgroundColor = '#dc3545';
+                  e.target.style.transform = 'scale(1)';
+                }
               }}
             >
-              <i className="fas fa-calendar-check" style={{ marginRight: '8px' }}></i>
-              Book Now
+              <i className={`fas ${isAvailable ? 'fa-calendar-check' : 'fa-calendar-times'}`} style={{ marginRight: '8px' }}></i>
+              {isAvailable ? 'Book Now' : 'View Availability'}
             </button>
           )}
         </div>

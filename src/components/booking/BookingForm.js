@@ -5,7 +5,9 @@ const BookingForm = ({ car, onBookingSubmit, loading }) => {
     startDate: '',
     endDate: '',
     pickupLocation: '',
-    dropoffLocation: ''
+    dropoffLocation: '',
+    useAlternativeEmail: true,
+    alternativeEmail: ''
   });
   const [errors, setErrors] = useState({});
   const [totalCost, setTotalCost] = useState(0);
@@ -64,6 +66,15 @@ const BookingForm = ({ car, onBookingSubmit, loading }) => {
     
     if (!bookingData.dropoffLocation.trim()) {
       newErrors.dropoffLocation = 'Drop-off location is required';
+    }
+    
+    if (bookingData.useAlternativeEmail && !bookingData.alternativeEmail.trim()) {
+      newErrors.alternativeEmail = 'Alternative email is required when checkbox is selected';
+    } else if (bookingData.useAlternativeEmail && bookingData.alternativeEmail.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(bookingData.alternativeEmail)) {
+        newErrors.alternativeEmail = 'Please enter a valid email address';
+      }
     }
     
     setErrors(newErrors);
@@ -182,6 +193,48 @@ const BookingForm = ({ car, onBookingSubmit, loading }) => {
             </select>
             {errors.dropoffLocation && (
               <div className="invalid-feedback">{errors.dropoffLocation}</div>
+            )}
+          </div>
+        </div>
+
+        <div className="row mb-3">
+          <div className="col-12">
+            <div className="form-check mb-3">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                id="useAlternativeEmail"
+                checked={bookingData.useAlternativeEmail}
+                onChange={(e) => handleInputChange('useAlternativeEmail', e.target.checked)}
+                style={{
+                  backgroundColor: bookingData.useAlternativeEmail ? '#dc3545' : 'transparent',
+                  borderColor: '#dc3545'
+                }}
+              />
+              <label className="form-check-label" htmlFor="useAlternativeEmail" style={{ color: 'white', marginLeft: '8px' }}>
+                Send booking notifications to alternative email
+              </label>
+            </div>
+            
+            {bookingData.useAlternativeEmail && (
+              <div>
+                <label style={{ color: '#dc3545', marginBottom: '8px',  fontWeight: 'bold' }}>Alternative Email for Booking Notifications</label>
+                <input
+                  type="email"
+                  className={`form-control ${errors.alternativeEmail ? 'is-invalid' : ''}`}
+                  value={bookingData.alternativeEmail}
+                  onChange={(e) => handleInputChange('alternativeEmail', e.target.value)}
+                  placeholder="Enter alternative email address"
+                  style={{
+                    backgroundColor: 'rgba(255,255,255,0.1)',
+                    border: '1px solid #555',
+                    color: 'white'
+                  }}
+                />
+                {errors.alternativeEmail && (
+                  <div className="invalid-feedback">{errors.alternativeEmail}</div>
+                )}
+              </div>
             )}
           </div>
         </div>

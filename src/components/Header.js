@@ -75,7 +75,6 @@ const Header = () => {
                 <nav>
                   <ul id="navigation">
                     {!isAuthenticated && <li><Link to="/home">Home</Link></li>}
-                    {!isAuthenticated && <li><Link to="/contact-us">Contact Us</Link></li>}
                     {!isAuthenticated && <li><Link to="/login">Login</Link></li>}
                     {!isAuthenticated && <li><Link to="/register">Register</Link></li>}
                     {isAuthenticated && user?.role === 'admin' && (
@@ -117,7 +116,21 @@ const Header = () => {
 
               {isAuthenticated && (
                 <div className="d-none d-lg-flex align-items-center" style={{gap: '15px'}}>
-                  <h2 style={{color: 'white', margin: 0, fontSize: '16px', fontWeight: 'normal'}}>Welcome, {user?.full_name}</h2>
+                  <Link 
+                    to={(user?.role === 'admin' || user?.role === 'staff') ? `/${user.role}/change-password` : '/profile'}
+                    style={{
+                      color: 'white', 
+                      margin: 0, 
+                      fontSize: '16px', 
+                      fontWeight: 'normal',
+                      textDecoration: 'none',
+                      transition: 'color 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => e.target.style.color = '#dc3545'}
+                    onMouseLeave={(e) => e.target.style.color = 'white'}
+                  >
+                    Welcome, {user?.full_name}
+                  </Link>
                   {user?.role === 'customer' && (
                     <div style={{
                       backgroundColor: '#28a745',
@@ -161,7 +174,6 @@ const Header = () => {
                   <nav>
                     <ul id="navigation">
                       {!isAuthenticated && <li><Link to="/home" onClick={toggleMenu}>Home</Link></li>}
-                      {!isAuthenticated && <li><Link to="/contact-us" onClick={toggleMenu}>Contact Us</Link></li>}
                       {!isAuthenticated && <li><Link to="/login" onClick={toggleMenu}>Login</Link></li>}
                       {!isAuthenticated && <li><Link to="/register" onClick={toggleMenu}>Register</Link></li>}
                       {isAuthenticated && user?.role === 'admin' && (

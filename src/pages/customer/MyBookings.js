@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
+import SuccessModal from '../../components/common/SuccessModal';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { API_BASE_URL } from '../../utils/api';
 
 const MyBookings = () => {
@@ -14,10 +16,19 @@ const MyBookings = () => {
   const [bookingToCancel, setBookingToCancel] = useState(null);
   const [showNotesModal, setShowNotesModal] = useState(false);
   const [selectedBookingNotes, setSelectedBookingNotes] = useState(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     setShowContent(true);
     fetchMyBookings();
+    
+    // Set up auto-refresh every 30 seconds to catch status updates from staff
+    const interval = setInterval(() => {
+      fetchMyBookings();
+    }, 30000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const fetchMyBookings = async () => {
@@ -78,7 +89,10 @@ const MyBookings = () => {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ apply_cancellation_fee: true })
+        body: JSON.stringify({ 
+          apply_cancellation_fee: true,
+          cancelled_by: 'customer'
+        })
       });
       
       if (response.ok) {
@@ -95,7 +109,8 @@ const MyBookings = () => {
           )
         );
         
-        alert(`Booking cancelled successfully!\nCancellation fee: £${cancellationFee.toFixed(2)}\nRefund amount: £${refundAmount.toFixed(2)} added to your balance.`);
+        setSuccessMessage(`Booking cancelled successfully!<br><br>Cancellation fee: <strong style="color: #dc3545;">£${cancellationFee.toFixed(2)}</strong><br>Refund amount: <strong style="color: #dc3545;">£${refundAmount.toFixed(2)}</strong> added to your balance.`);
+        setShowSuccessModal(true);
       } else {
         // Fallback calculation
         const cancellationFee = bookingToCancel.total_amount * 0.2;
@@ -109,7 +124,8 @@ const MyBookings = () => {
           )
         );
         
-        alert(`Booking cancelled (local update)\nCancellation fee: £${cancellationFee.toFixed(2)}\nRefund: £${refundAmount.toFixed(2)} will be processed.`);
+        setSuccessMessage(`Booking cancelled (local update)<br><br>Cancellation fee: <strong style="color: #dc3545;">£${cancellationFee.toFixed(2)}</strong><br>Refund: <strong style="color: #dc3545;">£${refundAmount.toFixed(2)}</strong> will be processed.`);
+        setShowSuccessModal(true);
       }
       
       setShowCancelModal(false);
@@ -128,7 +144,8 @@ const MyBookings = () => {
         )
       );
       
-      alert(`Booking cancelled (offline mode)\nCancellation fee: £${cancellationFee.toFixed(2)}\nRefund: £${refundAmount.toFixed(2)} will be processed.`);
+      setSuccessMessage(`Booking cancelled (offline mode)<br><br>Cancellation fee: <strong style="color: #dc3545;">£${cancellationFee.toFixed(2)}</strong><br>Refund: <strong style="color: #dc3545;">£${refundAmount.toFixed(2)}</strong> will be processed.`);
+      setShowSuccessModal(true);
       setShowCancelModal(false);
       setBookingToCancel(null);
     } finally {
@@ -177,7 +194,35 @@ const MyBookings = () => {
       }}>
         <div className="row mb-4">
           <div className="col-12">
-            <h2 className="text-white mb-3">My Bookings</h2>
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h2 className="text-white mb-0">My Bookings</h2>
+              <button
+                onClick={fetchMyBookings}
+                style={{
+                  backgroundColor: 'transparent',
+                  border: '2px solid #dc3545',
+                  color: '#dc3545',
+                  padding: '8px 15px',
+                  borderRadius: '20px',
+                  fontSize: '0.9rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = '#dc3545';
+                  e.target.style.color = 'white';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = 'transparent';
+                  e.target.style.color = '#dc3545';
+                }}
+              >
+                <i className="fas fa-sync-alt"></i>
+                Refresh
+              </button>
+            </div>
           </div>
         </div>
 
@@ -189,8 +234,7 @@ const MyBookings = () => {
             padding: '40px',
             textAlign: 'center'
           }}>
-            <div className="spinner-border text-light mb-3" role="status"></div>
-            <h4 style={{ color: 'white' }}>Loading your bookings...</h4>
+            <LoadingSpinner />
           </div>
         ) : bookings.length === 0 ? (
           <div style={{
@@ -391,7 +435,8 @@ const MyBookings = () => {
             ))}
           </div>
         )}
-        
+
+        {/* Cancel Booking Modal */}
         <ConfirmationModal
           isOpen={showCancelModal}
           onClose={() => {
@@ -405,6 +450,15 @@ const MyBookings = () => {
           cancelText="Keep Booking"
           loading={cancelling === bookingToCancel?.id}
           type="danger"
+        />
+
+        {/* Success Modal */}
+        <SuccessModal
+          isOpen={showSuccessModal}
+          onClose={() => setShowSuccessModal(false)}
+          title="Booking Cancelled"
+          message={successMessage}
+          closeText="Close"
         />
 
         {/* Inspection Notes Modal */}

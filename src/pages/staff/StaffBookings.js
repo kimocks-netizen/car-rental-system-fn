@@ -1,81 +1,80 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import DataTable from '../../components/DataTable';
+import EnhancedDataTable from '../../components/common/EnhancedDataTable';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
+import Badge from '../../components/common/Badge';
+import useFrontendTableData from '../../hooks/useFrontendTableData';
 import { API_BASE_URL } from '../../utils/api';
 
 const StaffBookings = () => {
   const { user } = useAuth();
-  const [bookings, setBookings] = useState([]);
   const [cars, setCars] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
 
-  useEffect(() => {
-    fetchBookings();
-  }, []);
-
+  // Fetch function for bookings
   const fetchBookings = async () => {
-    try {
-      const [bookingsResponse, carsResponse] = await Promise.all([
-        fetch(`${API_BASE_URL}/bookings`, {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-        }),
-        fetch(`${API_BASE_URL}/cars`, {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-        })
-      ]);
+    const [bookingsResponse, carsResponse] = await Promise.all([
+      fetch(`${API_BASE_URL}/bookings`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      }),
+      fetch(`${API_BASE_URL}/cars`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      })
+    ]);
 
-      if (bookingsResponse.ok && carsResponse.ok) {
-        const bookingsResult = await bookingsResponse.json();
-        const carsResult = await carsResponse.json();
-        
-        const bookingsData = bookingsResult.data?.bookings || bookingsResult.bookings || bookingsResult;
-        const carsData = carsResult.data?.cars || carsResult.cars || carsResult;
-        
-        const carsLookup = {};
-        carsData.forEach(car => {
-          carsLookup[car.id] = `${car.brand} ${car.model}`;
-        });
-        
-        setBookings(Array.isArray(bookingsData) ? bookingsData : []);
-        setCars(carsLookup);
-      } else {
-        setError('Failed to fetch data');
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      setError('Error loading data');
-    } finally {
-      setLoading(false);
+    if (bookingsResponse.ok && carsResponse.ok) {
+      const bookingsResult = await bookingsResponse.json();
+      const carsResult = await carsResponse.json();
+      
+      const bookingsData = bookingsResult.data?.bookings || bookingsResult.bookings || bookingsResult;
+      const carsData = carsResult.data?.cars || carsResult.cars || carsResult;
+      
+      const carsLookup = {};
+      carsData.forEach(car => {
+        carsLookup[car.id] = `${car.brand} ${car.model}`;
+      });
+      
+      setCars(carsLookup);
+      return Array.isArray(bookingsData) ? bookingsData : [];
     }
+    throw new Error('Failed to fetch bookings');
   };
 
+  const {
+    data: bookings,
+    loading,
+    error,
+    totalItems,
+    totalPages,
+    searchTerm,
+    handleSearch,
+    filters,
+    handleFilterChange,
+    sortConfig,
+    handleSort,
+    currentPage,
+    itemsPerPage,
+    handlePageChange,
+    handleItemsPerPageChange,
+    refresh
+  } = useFrontendTableData(fetchBookings, {}, { field: 'pickup_date', direction: 'desc' });
+
   const handleStatusUpdate = (booking, newStatus) => {
-    console.log('📝 handleStatusUpdate called');
-    console.log('Booking:', booking);
-    console.log('New Status:', newStatus);
     setSelectedBooking({ ...booking, newStatus });
     setModalType(newStatus);
     setShowModal(true);
-    console.log('✅ Modal should now be visible');
   };
 
   const confirmStatusUpdate = async () => {
-    console.log('🚀 confirmStatusUpdate called');
-    console.log('Selected booking:', selectedBooking);
-    
     try {
-      const url = `${API_BASE_URL}/bookings/${selectedBooking.id}/status`;
-      const payload = { status: selectedBooking.newStatus };
+      const payload = { 
+        status: selectedBooking.newStatus,
+        ...(selectedBooking.newStatus === 'cancelled' && { cancelled_by: 'staff' })
+      };
       
-      console.log('📡 Making API call to:', url);
-      console.log('📦 Payload:', payload);
-      
-      const response = await fetch(url, {
+      const response = await fetch(`${API_BASE_URL}/bookings/${selectedBooking.id}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -83,28 +82,13 @@ const StaffBookings = () => {
         },
         body: JSON.stringify(payload)
       });
-      
-      console.log('📨 Response status:', response.status);
-      console.log('📨 Response ok:', response.ok);
 
       if (response.ok) {
-        console.log('✅ API call successful, updating local state');
-        setBookings(bookings.map(booking => 
-          booking.id === selectedBooking.id 
-            ? { ...booking, status: selectedBooking.newStatus }
-            : booking
-        ));
-      } else {
-        console.log('❌ API call failed');
-        const errorText = await response.text();
-        console.log('Error response:', errorText);
-        setError('Failed to update booking status');
+        refresh(); // Refresh the data
       }
     } catch (error) {
-      console.error('💥 Error updating booking:', error);
-      setError('Error updating booking status');
+      console.error('Error updating booking:', error);
     } finally {
-      console.log('🏁 Closing modal and resetting state');
       setShowModal(false);
       setSelectedBooking(null);
     }
@@ -114,6 +98,7 @@ const StaffBookings = () => {
     { 
       key: 'id', 
       header: 'Booking ID',
+      sortable: true,
       render: (id) => `#${id.slice(0, 8)}`
     },
     { 
@@ -124,55 +109,30 @@ const StaffBookings = () => {
     { 
       key: 'status', 
       header: 'Status',
-      render: (status) => {
-        const getStatusColor = (status) => {
-          switch(status) {
-            case 'pending': return '#ff8c00';
-            case 'confirmed': return '#28a745';
-            case 'active': return '#007bff';
-            case 'completed': return '#6c757d';
-            case 'cancelled': return '#dc3545';
-            default: return '#ffc107';
-          }
-        };
-        return (
-          <span style={{
-            backgroundColor: getStatusColor(status),
-            color: 'white',
-            padding: '4px 8px',
-            borderRadius: '12px',
-            fontSize: '0.8rem',
-            fontWeight: '500',
-            textTransform: 'capitalize'
-          }}>
-            {status}
-          </span>
-        );
-      }
+      sortable: true,
+      render: (status) => <Badge variant={status}>{status}</Badge>
     },
     { 
       key: 'total_amount', 
       header: 'Amount',
+      sortable: true,
       render: (value) => `£${value}`
     },
     { 
       key: 'pickup_date', 
       header: 'Pickup Date',
+      sortable: true,
       render: (value) => new Date(value).toLocaleDateString()
     },
     { 
       key: 'return_date', 
       header: 'Return Date',
+      sortable: true,
       render: (value) => new Date(value).toLocaleDateString()
     },
     { 
       key: 'pickup_location', 
       header: 'Pickup Location',
-      render: (value) => value || 'Not specified'
-    },
-    { 
-      key: 'dropoff_location', 
-      header: 'Return Location',
       render: (value) => value || 'Not specified'
     }
   ];
@@ -180,66 +140,59 @@ const StaffBookings = () => {
   const getBookingActions = () => {
     return [
       {
-        label: <i className="fas fa-check" style={{color: '#28a745'}}></i>,
-        className: 'btn-link',
+        label: 'Approve Booking',
+        icon: 'fas fa-check',
         onClick: (booking) => {
-          if (booking.status === 'pending') {
-            handleStatusUpdate(booking, 'confirmed');
-          }
+          handleStatusUpdate(booking, 'confirmed');
         },
-        title: 'Approve Booking',
         disabled: (booking) => booking.status !== 'pending'
       },
       {
-        label: <i className="fas fa-times" style={{color: '#dc3545'}}></i>,
-        className: 'btn-link', 
+        label: 'Cancel Booking',
+        icon: 'fas fa-times',
         onClick: (booking) => {
-          if (booking.status === 'pending' || booking.status === 'confirmed') {
-            handleStatusUpdate(booking, 'cancelled');
-          }
+          handleStatusUpdate(booking, 'cancelled');
         },
-        title: 'Cancel Booking',
-        disabled: (booking) => booking.status !== 'pending' && booking.status !== 'confirmed'
+        disabled: (booking) => !['pending', 'confirmed'].includes(booking.status)
       },
       {
-        label: <i className="fas fa-play" style={{color: '#007bff'}}></i>,
-        className: 'btn-link',
+        label: 'Start Rental',
+        icon: 'fas fa-play',
         onClick: (booking) => {
-          if (booking.status === 'confirmed') {
-            handleStatusUpdate(booking, 'active');
-          }
+          handleStatusUpdate(booking, 'active');
         },
-        title: 'Start Rental',
         disabled: (booking) => booking.status !== 'confirmed'
       }
     ];
   };
 
-  if (loading) {
-    return (
-      <div style={{minHeight: '100vh', paddingTop: '120px', backgroundImage: 'url(/photos/hero2.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>
-        <div className="container">
-          <div className="text-center text-white">
-            <h3>Loading bookings...</h3>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Filter configuration
+  const filterConfig = [
+    {
+      key: 'status',
+      label: 'Status',
+      placeholder: 'All Statuses',
+      options: [
+        { value: 'pending', label: 'Pending' },
+        { value: 'confirmed', label: 'Confirmed' },
+        { value: 'active', label: 'Active' },
+        { value: 'completed', label: 'Completed' },
+        { value: 'cancelled', label: 'Cancelled' }
+      ]
+    }
+  ];
 
-  if (error) {
-    return (
-      <div style={{minHeight: '100vh', paddingTop: '120px', backgroundImage: 'url(/photos/hero2.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>
-        <div className="container">
-          <div className="alert alert-danger">
-            <h5>Error loading bookings</h5>
-            <p>{error}</p>
-            <button className="btn btn-primary" onClick={fetchBookings}>Retry</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Sort options
+  const sortOptions = [
+    { value: 'pickup_date-desc', label: 'Pickup Date: Latest First' },
+    { value: 'pickup_date-asc', label: 'Pickup Date: Earliest First' },
+    { value: 'return_date-desc', label: 'Return Date: Latest First' },
+    { value: 'return_date-asc', label: 'Return Date: Earliest First' },
+    { value: 'total_amount-desc', label: 'Amount: High to Low' },
+    { value: 'total_amount-asc', label: 'Amount: Low to High' },
+    { value: 'status-asc', label: 'Status: A to Z' },
+    { value: 'status-desc', label: 'Status: Z to A' }
+  ];
 
   return (
     <div style={{minHeight: '100vh', paddingTop: '120px', backgroundImage: 'url(/photos/hero2.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>
@@ -247,11 +200,37 @@ const StaffBookings = () => {
         <div className="row">
           <div className="col-12">
             <h2 className="text-white mb-4">Booking Management</h2>
-            <DataTable 
-              title={`All Bookings (${bookings.length})`}
+            
+            <EnhancedDataTable
+              title="Booking Management"
               data={bookings}
               columns={bookingColumns}
               actions={getBookingActions()}
+              loading={loading}
+              error={error}
+              
+              // Search
+              searchTerm={searchTerm}
+              onSearch={handleSearch}
+              searchPlaceholder="Search by booking ID, car, location..."
+              
+              // Sort
+              sortConfig={sortConfig}
+              onSort={handleSort}
+              sortOptions={sortOptions}
+              
+              // Filters
+              filters={filterConfig}
+              filterValues={filters}
+              onFilterChange={handleFilterChange}
+              
+              // Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              itemsPerPage={itemsPerPage}
+              onPageChange={handlePageChange}
+              onItemsPerPageChange={handleItemsPerPageChange}
             />
           </div>
         </div>

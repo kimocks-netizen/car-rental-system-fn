@@ -111,8 +111,13 @@ export const AuthProvider = ({ children }) => {
   const updateProfile = async (profileData) => {
     try {
       const response = await axios.put(`${API_BASE_URL}/auth/profile`, profileData);
-      setUser(response.data.data);
-      return { success: true, user: response.data.data };
+      const updatedUser = response.data.data;
+      
+      // Update both state and localStorage
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      
+      return { success: true, user: updatedUser };
     } catch (error) {
       const message = error.response?.data?.message || 'Profile update failed';
       throw new Error(message);

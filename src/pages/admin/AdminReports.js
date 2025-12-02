@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DashboardStats from '../../components/DashboardStats';
-import DataTable from '../../components/DataTable';
+import EnhancedBookingsTable from '../../components/EnhancedBookingsTable';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 import adminService from '../../services/adminService';
 import {
   Chart as ChartJS,
@@ -49,57 +50,12 @@ const AdminReports = () => {
     }
   };
 
-  const bookingColumns = [
-    { key: 'id', header: 'Booking ID' },
-    { 
-      key: 'status', 
-      header: 'Status',
-      render: (status) => {
-        const getStatusColor = (status) => {
-          switch(status) {
-            case 'pending': return '#ff8c00';
-            case 'confirmed': return '#28a745';
-            case 'cancelled': return '#dc3545';
-            case 'active': return '#007bff';
-            case 'completed': return '#6c757d';
-            default: return '#ffc107';
-          }
-        };
-        return (
-          <span style={{
-            backgroundColor: getStatusColor(status),
-            color: 'white',
-            padding: '4px 8px',
-            borderRadius: '12px',
-            fontSize: '0.8rem',
-            fontWeight: '500',
-            textTransform: 'capitalize'
-          }}>
-            {status}
-          </span>
-        );
-      }
-    },
-    { 
-      key: 'total_amount', 
-      header: 'Amount',
-      render: (value) => `£${value}`
-    },
-    { 
-      key: 'created_at', 
-      header: 'Date',
-      render: (value) => new Date(value).toLocaleDateString()
-    }
-  ];
+
 
   if (loading) {
     return (
-      <div style={{minHeight: '100vh', paddingTop: '120px', backgroundImage: 'url(/photos/hero2.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>
-        <div className="container">
-          <div className="text-center text-white">
-            <h3>Loading reports...</h3>
-          </div>
-        </div>
+      <div style={{minHeight: '100vh', paddingTop: '120px', backgroundImage: 'url(/photos/hero2.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+        <LoadingSpinner />
       </div>
     );
   }
@@ -127,13 +83,12 @@ const AdminReports = () => {
             
             {reports?.stats && <DashboardStats stats={reports.stats} />}
             
-            {reports?.recentBookings && (
-              <DataTable 
-                title="Recent Bookings"
-                data={reports.recentBookings}
-                columns={bookingColumns}
+            <div style={{ marginBottom: '30px' }}>
+              <h4 className="text-white mb-3">Recent Bookings</h4>
+              <EnhancedBookingsTable 
+                apiEndpoint="/bookings"
               />
-            )}
+            </div>
             
             {reports?.monthlyRevenue !== undefined && (
               <div style={{
@@ -150,7 +105,7 @@ const AdminReports = () => {
                 <div style={{ textAlign: 'left' }}>
                   <h5 style={{ color: 'white', marginBottom: '15px' }}>Monthly Revenue</h5>
                   <h3 style={{ color: 'white', margin: 0 }}>£{reports.monthlyRevenue}</h3>
-                  <p style={{ color: '#ccc', margin: 0, fontSize: '0.9rem' }}>Confirmed + Active + Completed + Cancellation fees + Damage charges</p>
+                  <p style={{ color: '#ccc', margin: 0, fontSize: '0.9rem' }}>Confirmed + Active + Completed + Customer cancellation fees + Damage charges</p>
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <h5 style={{ color: 'white', marginBottom: '15px' }}>Incoming Revenue</h5>
